@@ -68,9 +68,11 @@ async def get_article(
     article = await article_service.get_article_by_id(db, article_id)
     if article is None:
         raise HTTPException(status_code=404, detail="Article not found")
+    result = await _build_detail(db, article)
     await article_service.increment_view_count(db, article)
     await db.commit()
-    return await _build_detail(db, article)
+    result["view_count"] = article.view_count
+    return result
 
 
 @router.delete("/{article_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -105,7 +107,7 @@ async def _build_list_item(db: AsyncSession, article: Article) -> dict:
     return {
         "id": article.id,
         "title": article.title,
-        "summary": article.summary,
+        "summary": article.summary or (article.content[:200] + "..." if article.content else None),
         "author_id": article.author_id,
         "author_name": article.author.username,
         "author_avatar": article.author.avatar,

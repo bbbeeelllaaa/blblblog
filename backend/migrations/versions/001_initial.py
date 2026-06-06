@@ -9,7 +9,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-import pgvector
+from pgvector.sqlalchemy import Vector
 
 revision: str = "001"
 down_revision: Union[str, None] = None
@@ -18,7 +18,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute("CREATE EXTENSION IF NOT EXISTS pgvector")
+    op.execute("CREATE EXTENSION IF NOT EXISTS vector")
     op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
 
     op.create_table(
@@ -50,7 +50,7 @@ def upgrade() -> None:
         sa.Column("view_count", sa.Integer(), server_default="0"),
         sa.Column("is_published", sa.Boolean(), server_default="true"),
         sa.Column("search_vector", postgresql.TSVECTOR(), nullable=True),
-        sa.Column("embedding", pgvector.Vector(1536), nullable=True),
+        sa.Column("embedding", Vector(1536), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.PrimaryKeyConstraint("id"),

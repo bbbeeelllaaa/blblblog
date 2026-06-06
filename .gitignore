@@ -34,3 +34,6 @@ postgres_data/
 
 # Misc
 *.tmp
+
+*.tar
+*.tar.gz

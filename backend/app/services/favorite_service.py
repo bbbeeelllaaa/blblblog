@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, desc, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 from app.models.favorite import Favorite
 from app.models.article import Article
 
@@ -39,7 +39,7 @@ async def get_user_favorites(
         .where(Favorite.user_id == user_id)
         .options(
             selectinload(Favorite.article).selectinload(Article.tags),
-            selectinload(Favorite.article).selectinload(Article.author),
+            selectinload(Favorite.article).joinedload(Article.author),
         )
         .order_by(desc(Favorite.created_at))
         .offset((page - 1) * size)

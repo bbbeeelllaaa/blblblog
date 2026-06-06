@@ -25,6 +25,7 @@ async def search_articles(
             "id": a.id,
             "title": a.title,
             "summary": a.summary,
+            "author_id": a.author_id,
             "author_name": a.author.username if a.author else "Unknown",
             "tags": [{"id": t.id, "name": t.name} for t in (a.tags or [])],
             "created_at": a.created_at,

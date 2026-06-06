@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.comment import Comment
@@ -6,13 +6,15 @@ from app.models.like import CommentLike
 
 
 async def create_comment(
-    db: AsyncSession, user_id: int, article_id: int, content: str, parent_id: int | None = None
+    db: AsyncSession, user_id: int, article_id: int, content: str, parent_id: int | None = None,
+    image_url: str | None = None,
 ) -> Comment:
     comment = Comment(
         user_id=user_id,
         article_id=article_id,
         content=content,
         parent_id=parent_id,
+        image_url=image_url,
     )
     db.add(comment)
     await db.flush()
@@ -21,7 +23,7 @@ async def create_comment(
 
 
 async def get_article_comments(
-    db: AsyncSession, article_id: int, page: int = 1, size: int = 20
+    db: AsyncSession, article_id: int, page: int = 1, size: int = 20, sort: str = "newest"
 ) -> tuple[list[Comment], int]:
     count_result = await db.execute(
         select(func.count(Comment.id)).where(
@@ -32,7 +34,7 @@ async def get_article_comments(
     )
     total = count_result.scalar() or 0
 
-    result = await db.execute(
+    query = (
         select(Comment)
         .where(
             Comment.article_id == article_id,
@@ -43,10 +45,21 @@ async def get_article_comments(
             selectinload(Comment.user),
             selectinload(Comment.replies).selectinload(Comment.user),
         )
-        .order_by(Comment.created_at.desc())
-        .offset((page - 1) * size)
-        .limit(size)
     )
+
+    if sort == "most_liked":
+        like_count_subq = (
+            select(CommentLike.comment_id, func.count(CommentLike.id).label("cnt"))
+            .group_by(CommentLike.comment_id)
+            .subquery()
+        )
+        query = query.outerjoin(like_count_subq, Comment.id == like_count_subq.c.comment_id)
+        query = query.order_by(desc(func.coalesce(like_count_subq.c.cnt, 0)), desc(Comment.created_at))
+    else:
+        query = query.order_by(desc(Comment.created_at))
+
+    query = query.offset((page - 1) * size).limit(size)
+    result = await db.execute(query)
     comments = result.scalars().unique().all()
     return list(comments), total
 
@@ -73,3 +86,30 @@ async def check_comment_liked(db: AsyncSession, comment_id: int, user_id: int) -
         )
     )
     return result.scalar_one_or_none() is not None
+
+
+async def batch_get_comment_like_data(
+    db: AsyncSession, comment_ids: list[int], user_id: int | None
+) -> tuple[dict[int, int], set[int]]:
+    """Return (comment_id -> like_count, set of comment_ids liked by user)."""
+    if not comment_ids:
+        return {}, set()
+
+    count_result = await db.execute(
+        select(CommentLike.comment_id, func.count(CommentLike.id))
+        .where(CommentLike.comment_id.in_(comment_ids))
+        .group_by(CommentLike.comment_id)
+    )
+    like_counts = dict(count_result.all()) if count_result else {}
+
+    liked_set = set()
+    if user_id:
+        liked_result = await db.execute(
+            select(CommentLike.comment_id).where(
+                CommentLike.comment_id.in_(comment_ids),
+                CommentLike.user_id == user_id,
+            )
+        )
+        liked_set = set(liked_result.scalars().all())
+
+    return like_counts, liked_set

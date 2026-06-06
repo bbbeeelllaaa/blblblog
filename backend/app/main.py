@@ -1,6 +1,7 @@
 import os
+import uuid
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.config import get_settings
@@ -59,3 +60,21 @@ app.include_router(online_router)
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.post("/upload/image")
+async def upload_image(file: UploadFile = File(...)):
+    if file.content_type and not file.content_type.startswith("image/"):
+        raise HTTPException(400, "Only image files are allowed")
+
+    content = await file.read()
+    if len(content) > settings.MAX_UPLOAD_SIZE:
+        raise HTTPException(400, "File too large")
+
+    ext = os.path.splitext(file.filename or ".png")[1] or ".png"
+    filename = f"{uuid.uuid4().hex}{ext}"
+    filepath = os.path.join(settings.UPLOAD_DIR, filename)
+    with open(filepath, "wb") as f:
+        f.write(content)
+
+    return {"url": f"/uploads/{filename}"}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { commentAPI, likeAPI } from '../services/api';
+import api, { commentAPI, likeAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -10,14 +10,35 @@ export default function CommentSection({ articleId, refreshTrigger }) {
   const [comments, setComments] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [sort, setSort] = useState('newest');
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.post('/upload/image', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setImageUrl(res.data.url);
+    } catch {
+      toast.error('Image upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const loadComments = async () => {
     setLoading(true);
     try {
-      const res = await commentAPI.list(articleId, { page, size: 20 });
+      const res = await commentAPI.list(articleId, { page, size: 20, sort });
       setComments(res.data.items);
       setTotal(res.data.total);
     } catch {
@@ -29,7 +50,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
 
   useEffect(() => {
     loadComments();
-  }, [articleId, page, refreshTrigger]);
+  }, [articleId, page, sort, refreshTrigger]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,8 +64,10 @@ export default function CommentSection({ articleId, refreshTrigger }) {
       await commentAPI.create(articleId, {
         content: content.trim(),
         parent_id: replyTo?.id || null,
+        image_url: imageUrl || null,
       });
       setContent('');
+      setImageUrl('');
       setReplyTo(null);
       toast.success('Comment posted');
       loadComments();
@@ -80,10 +103,13 @@ export default function CommentSection({ articleId, refreshTrigger }) {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm font-medium text-gray-900">{comment.username}</span>
             <span className="text-xs text-gray-400">
-              {new Date(comment.created_at).toLocaleDateString('zh-CN')}
+              {new Date(comment.created_at).toLocaleString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
           <p className="text-gray-700 text-sm whitespace-pre-wrap break-words">{comment.content}</p>
+          {comment.image_url && (
+            <img src={comment.image_url} alt="Comment image" className="mt-2 max-w-xs rounded-lg object-cover max-h-48" />
+          )}
           <div className="flex items-center gap-4 mt-2">
             <button
               onClick={() => handleLike(comment.id)}
@@ -129,6 +155,23 @@ export default function CommentSection({ articleId, refreshTrigger }) {
     <div className="mt-8">
       <h3 className="text-lg font-semibold mb-4">Comments ({total})</h3>
 
+      {/* Sort selector */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-xs text-gray-400">Sort by:</span>
+        <button
+          onClick={() => { setSort('newest'); setPage(1); }}
+          className={`text-xs px-3 py-1 rounded-full transition-colors ${sort === 'newest' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+        >
+          Newest
+        </button>
+        <button
+          onClick={() => { setSort('most_liked'); setPage(1); }}
+          className={`text-xs px-3 py-1 rounded-full transition-colors ${sort === 'most_liked' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+        >
+          Most Liked
+        </button>
+      </div>
+
       {/* New comment form */}
       {!replyTo && (
         <form onSubmit={handleSubmit} className="mb-6">
@@ -139,9 +182,21 @@ export default function CommentSection({ articleId, refreshTrigger }) {
             rows={3}
             className="input-field resize-none"
           />
-          <button type="submit" className="btn-primary mt-2 text-sm" disabled={!content.trim()}>
-            Post Comment
-          </button>
+          <div className="flex items-center gap-2 mt-2">
+            <button type="submit" className="btn-primary text-sm" disabled={!content.trim()}>
+              Post Comment
+            </button>
+            <label className="cursor-pointer text-sm text-gray-400 hover:text-gray-600">
+              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              {uploading ? 'Uploading...' : 'Image'}
+            </label>
+          </div>
+          {imageUrl && (
+            <div className="mt-2 relative inline-block">
+              <img src={imageUrl} alt="preview" className="max-w-xs max-h-32 rounded object-cover" />
+              <button onClick={() => setImageUrl('')} className="absolute -top-1 -right-1 w-5 h-5 bg-gray-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
+            </div>
+          )}
         </form>
       )}
 

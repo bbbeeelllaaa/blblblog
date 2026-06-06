@@ -121,8 +121,8 @@ export default function ArticleDetailPage() {
           <div>
             <div className="text-sm font-medium text-gray-900">{article.author_name}</div>
             <div className="text-xs text-gray-400">
-              {new Date(article.created_at).toLocaleDateString('zh-CN', {
-                year: 'numeric', month: 'long', day: 'numeric',
+              {new Date(article.created_at).toLocaleString('zh-CN', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
               })}
             </div>
           </div>

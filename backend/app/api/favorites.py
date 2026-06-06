@@ -5,6 +5,7 @@ from app.core.deps import get_current_user
 from app.models.user import User
 from app.schemas.favorite import FavoriteResponse, FavoriteStatus
 from app.services.favorite_service import toggle_favorite, get_user_favorites
+from app.services.article_service import get_article_like_count, get_article_comment_count
 
 router = APIRouter(prefix="/favorites", tags=["favorites"])
 
@@ -35,8 +36,13 @@ async def list_favorites(
             "article_id": article.id,
             "article_title": article.title,
             "article_summary": article.summary,
+            "author_id": article.author_id,
             "author_name": article.author.username if article.author else "Unknown",
+            "author_avatar": article.author.avatar if article.author else None,
             "tags": [{"id": t.id, "name": t.name} for t in (article.tags or [])],
+            "view_count": article.view_count,
+            "like_count": await get_article_like_count(db, article.id),
+            "comment_count": await get_article_comment_count(db, article.id),
             "created_at": fav.created_at,
         })
     return {"items": items, "total": total, "page": page, "size": size}

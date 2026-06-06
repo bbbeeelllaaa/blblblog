@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, get_optional_user
 from app.models.user import User
 from app.models.comment import Comment
 from app.schemas.comment import CommentCreate, CommentResponse
@@ -23,9 +23,9 @@ async def create_comment(
             raise HTTPException(status_code=400, detail="Invalid parent comment")
 
     comment = await comment_service.create_comment(
-        db, user.id, article_id, data.content, data.parent_id
+        db, user.id, article_id, data.content, data.parent_id, data.image_url
     )
-    return _to_comment_response(comment, user.id)
+    return _build_comment_dict(comment, like_count=0, is_liked=False, user_id=user.id)
 
 
 @router.get("", response_model=dict)
@@ -33,14 +33,16 @@ async def list_comments(
     article_id: int,
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
-    user: User | None = Depends(_get_optional_user),
+    sort: str = Query("newest", pattern="^(newest|most_liked)$"),
+    user: User | None = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db),
 ):
-    comments, total = await comment_service.get_article_comments(db, article_id, page, size)
-    user_id = user.id if user else None
-    items = []
-    for c in comments:
-        items.append(await _to_comment_response(c, user_id))
+    comments, total = await comment_service.get_article_comments(db, article_id, page, size, sort)
+    all_ids = _collect_comment_ids(comments)
+    like_counts, liked_set = await comment_service.batch_get_comment_like_data(
+        db, all_ids, user.id if user else None
+    )
+    items = [_build_comment_tree(c, like_counts, liked_set, user.id if user else None) for c in comments]
     return {"items": items, "total": total, "page": page, "size": size}
 
 
@@ -59,11 +61,35 @@ async def delete_comment(
     comment.is_deleted = True
 
 
-async def _get_optional_user(db: AsyncSession = Depends(get_db)) -> User | None:
-    return None
+def _collect_comment_ids(comments: list[Comment]) -> list[int]:
+    ids = []
+    for c in comments:
+        ids.append(c.id)
+        for r in (c.replies or []):
+            ids.append(r.id)
+    return ids
 
 
-def _to_comment_response(comment: Comment, user_id: int | None = None) -> dict:
+def _build_comment_tree(comment: Comment, like_counts: dict[int, int], liked_set: set[int], user_id: int | None) -> dict:
+    result = _build_comment_dict(
+        comment,
+        like_count=like_counts.get(comment.id, 0),
+        is_liked=comment.id in liked_set,
+        user_id=user_id,
+    )
+    result["replies"] = [
+        _build_comment_dict(
+            reply,
+            like_count=like_counts.get(reply.id, 0),
+            is_liked=reply.id in liked_set,
+            user_id=user_id,
+        )
+        for reply in (comment.replies or [])
+    ]
+    return result
+
+
+def _build_comment_dict(comment: Comment, like_count: int, is_liked: bool, user_id: int | None) -> dict:
     return {
         "id": comment.id,
         "content": comment.content if not comment.is_deleted else "[deleted]",
@@ -72,8 +98,9 @@ def _to_comment_response(comment: Comment, user_id: int | None = None) -> dict:
         "user_avatar": comment.user.avatar if comment.user else None,
         "article_id": comment.article_id,
         "parent_id": comment.parent_id,
-        "like_count": 0,
-        "is_liked": False,
+        "image_url": comment.image_url,
+        "like_count": like_count,
+        "is_liked": is_liked,
         "replies": [],
         "created_at": comment.created_at,
     }

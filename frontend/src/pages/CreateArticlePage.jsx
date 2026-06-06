@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
-import { articleAPI } from '../services/api';
+import api, { articleAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -13,6 +13,26 @@ export default function CreateArticlePage() {
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.post('/upload/image', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setContent((prev) => prev + `\n![](${res.data.url})\n`);
+      toast.success('Image uploaded');
+    } catch {
+      toast.error('Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (!user) {
     navigate('/login');
@@ -73,7 +93,11 @@ export default function CreateArticlePage() {
             preview="live"
           />
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <label className="btn-secondary cursor-pointer text-sm">
+            {uploading ? 'Uploading...' : 'Upload Image'}
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+          </label>
           <button type="submit" className="btn-primary" disabled={saving}>
             {saving ? 'Publishing...' : 'Publish'}
           </button>

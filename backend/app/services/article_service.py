@@ -1,6 +1,6 @@
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 from app.models.article import Article, ArticleTag, article_tag_association
 from app.models.comment import Comment
 from app.models.like import ArticleLike
@@ -55,7 +55,7 @@ async def get_articles(
     total = total_result.scalar() or 0
 
     query = query.order_by(desc(Article.created_at)).offset((page - 1) * size).limit(size)
-    query = query.options(selectinload(Article.tags), selectinload(Article.author))
+    query = query.options(selectinload(Article.tags), joinedload(Article.author))
     result = await db.execute(query)
     articles = result.scalars().unique().all()
 
@@ -68,7 +68,7 @@ async def get_article_by_id(db: AsyncSession, article_id: int) -> Article | None
         .where(Article.id == article_id)
         .options(
             selectinload(Article.tags),
-            selectinload(Article.author),
+            joinedload(Article.author),
         )
     )
     return result.scalar_one_or_none()

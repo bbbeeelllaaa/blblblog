@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
 export default function ArticleCard({ article }) {
-  const date = new Date(article.created_at).toLocaleDateString('zh-CN', {
-    year: 'numeric', month: 'long', day: 'numeric',
+  const date = new Date(article.created_at).toLocaleString('zh-CN', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
 
   return (

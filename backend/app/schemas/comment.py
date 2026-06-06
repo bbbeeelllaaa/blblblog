@@ -5,6 +5,7 @@ from datetime import datetime
 class CommentCreate(BaseModel):
     content: str = Field(min_length=1, max_length=5000)
     parent_id: int | None = None
+    image_url: str | None = None
 
 
 class CommentUpdate(BaseModel):
@@ -19,6 +20,7 @@ class CommentResponse(BaseModel):
     user_avatar: str | None
     article_id: int
     parent_id: int | None
+    image_url: str | None = None
     like_count: int = 0
     is_liked: bool = False
     replies: list["CommentResponse"] = []

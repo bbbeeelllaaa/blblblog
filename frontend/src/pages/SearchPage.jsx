@@ -82,7 +82,7 @@ export default function SearchPage() {
                 <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.summary}</p>
               )}
               <div className="flex items-center gap-3 text-xs text-gray-400">
-                <span>{item.author_name}</span>
+                <Link to={`/users/${item.author_id}`} className="hover:text-blue-500">{item.author_name}</Link>
                 <span>{new Date(item.created_at).toLocaleDateString('zh-CN')}</span>
                 {item.relevance > 0 && (
                   <span className="text-blue-500">Relevance: {(item.relevance * 100).toFixed(0)}%</span>

@@ -52,8 +52,13 @@ export default function FavoritesPage() {
                 id: fav.article_id,
                 title: fav.article_title,
                 summary: fav.article_summary,
+                author_id: fav.author_id,
                 author_name: fav.author_name,
+                author_avatar: fav.author_avatar,
                 tags: fav.tags,
+                view_count: fav.view_count,
+                like_count: fav.like_count,
+                comment_count: fav.comment_count,
                 created_at: fav.created_at,
               }}
             />
