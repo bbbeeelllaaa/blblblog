@@ -31,7 +31,7 @@ services:
       retries: 5
 
   backend:
-    image: ${DOCKER_HUB_USERNAME}/myblog-backend:latest
+    image: myblog-backend:latest
     container_name: myblog-backend
     environment:
       DATABASE_URL: postgresql+asyncpg://blog_user:blog_password@postgres:5432/blog_db
@@ -58,7 +58,7 @@ services:
       "
 
   frontend:
-    image: ${DOCKER_HUB_USERNAME}/myblog-frontend:latest
+    image: myblog-frontend:latest
     container_name: myblog-frontend
     restart: unless-stopped
     depends_on:

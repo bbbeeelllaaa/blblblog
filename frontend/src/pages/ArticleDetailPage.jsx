@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import MDEditor from '@uiw/react-md-editor';
 import { articleAPI, likeAPI, favoriteAPI, statsAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import CommentSection from '../components/CommentSection';
@@ -208,10 +209,8 @@ export default function ArticleDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="prose max-w-none mb-8">
-        <div className="text-gray-800 leading-relaxed whitespace-pre-wrap break-words">
-          {article.content}
-        </div>
+      <div className="mb-8" data-color-mode="light">
+        <MDEditor.Markdown source={article.content} />
       </div>
 
       {/* Comments */}

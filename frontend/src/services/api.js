@@ -3,7 +3,6 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: '/api',
   timeout: 15000,
-  headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use((config) => {
@@ -42,9 +41,7 @@ export const userAPI = {
   uploadAvatar: (file) => {
     const form = new FormData();
     form.append('file', file);
-    return api.post('/users/me/avatar', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return api.post('/users/me/avatar', form);
   },
 };
 
@@ -88,6 +85,18 @@ export const statsAPI = {
     api.post(`/stats/view/${articleId}`, null, { params: { user_id: userId || 'anonymous' } }),
   online: () => api.get('/stats/online'),
   articleStats: (articleId) => api.get(`/stats/article/${articleId}`),
+};
+
+// Admin
+export const adminAPI = {
+  listUsers: (params) => api.get('/admin/users', { params }),
+  toggleUserAdmin: (userId, isAdmin) => api.put(`/admin/users/${userId}/admin`, { is_admin: isAdmin }),
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
+  listArticles: (params) => api.get('/admin/articles', { params }),
+  deleteArticle: (articleId) => api.delete(`/admin/articles/${articleId}`),
+  listComments: (params) => api.get('/admin/comments', { params }),
+  deleteComment: (commentId) => api.delete(`/admin/comments/${commentId}`),
+  getStats: () => api.get('/admin/stats'),
 };
 
 export default api;

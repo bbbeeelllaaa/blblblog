@@ -1,14 +1,16 @@
-# MyBlog - Personal Blog System
+# blblblog - Personal Blog System
 
 A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redis, fully containerized with Docker.
 
 ## Features
 
 - **User System**: Register, login (JWT), profile management with avatar upload
-- **Blog Articles**: Markdown editor with live preview, tags/categories, pagination
+- **Blog Articles**: Markdown editor with live preview, image upload, tags/categories, pagination
 - **Comments**: Nested replies (threaded comments), Markdown support
 - **Likes**: Like/unlike articles and comments, real-time count via Redis
 - **Favorites**: Bookmark articles, view favorites in personal center
+- **Admin Panel**: Manage users, articles, comments; dashboard statistics; role-based access control
+- **User Tracking**: Login time, login count, articles published, likes received per user
 - **Hybrid Search**: Full-text search (PostgreSQL tsvector) + Semantic search (pgvector), Chinese word segmentation via jieba
 - **Online Stats**: Real-time UV/PV tracking using Redis HyperLogLog
 - **AI Summary**: Generate article summaries via OpenAI API (with TextRank fallback)
@@ -34,7 +36,7 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 myblog/
 ├── backend/
 │   ├── app/
-│   │   ├── api/          # Route handlers
+│   │   ├── api/          # Route handlers (auth, users, articles, comments, likes, favorites, search, admin)
 │   │   ├── core/         # Config, security, deps, database
 │   │   ├── models/       # SQLAlchemy ORM models
 │   │   ├── schemas/      # Pydantic request/response schemas
@@ -47,7 +49,7 @@ myblog/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/   # Reusable UI components
-│   │   ├── pages/        # Page components
+│   │   ├── pages/        # Page components (including AdminPage)
 │   │   ├── hooks/        # Custom React hooks (auth)
 │   │   └── services/     # API client (axios)
 │   ├── Dockerfile
@@ -55,6 +57,7 @@ myblog/
 ├── nginx/
 │   └── nginx.conf        # Production reverse proxy
 ├── docker-compose.yml
+├── docker-compose.prod.yml
 ├── .github/workflows/deploy.yml
 └── README.md
 ```
@@ -70,7 +73,7 @@ myblog/
 
 ```bash
 # Clone the repo
-git clone <your-repo-url>
+git clone https://github.com/bbbeeelllaaa/blblblog.git
 cd myblog
 
 # Start all services
@@ -102,8 +105,8 @@ cd backend
 
 # Create virtual environment
 python -m venv venv
-venv\Scripts\activate  # Windows
 source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
 
 # Install dependencies
 pip install -r requirements.txt
@@ -177,6 +180,24 @@ Once the backend is running, visit:
 | GET | `/search?q=keyword` | No | Hybrid search |
 | GET | `/stats/online` | No | Online user count |
 | POST | `/stats/view/{id}` | No | Record page view |
+| GET | `/admin/stats` | Admin | Dashboard statistics |
+| GET | `/admin/users` | Admin | List all users |
+| PUT | `/admin/users/{id}/admin` | Admin | Toggle user admin role |
+| DELETE | `/admin/users/{id}` | Admin | Delete user |
+| GET | `/admin/articles` | Admin | List all articles |
+| DELETE | `/admin/articles/{id}` | Admin | Delete any article |
+| GET | `/admin/comments` | Admin | List all comments |
+| DELETE | `/admin/comments/{id}` | Admin | Delete any comment |
+
+## Admin Panel
+
+After deployment, set the first admin user manually:
+
+```sql
+UPDATE users SET is_admin = true WHERE username = 'your-username';
+```
+
+Admin users can access the admin panel via the "Admin" link in the navigation bar, with tabs for dashboard statistics, user management, article management, and comment moderation.
 
 ## CI/CD
 

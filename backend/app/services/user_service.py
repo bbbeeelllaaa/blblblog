@@ -26,6 +26,10 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> str 
     user = result.scalar_one_or_none()
     if user is None or not verify_password(password, user.password_hash):
         return None
+    from datetime import datetime, timezone
+    user.last_login = datetime.now(timezone.utc)
+    user.login_count = (user.login_count or 0) + 1
+    await db.flush()
     return create_access_token({"sub": str(user.id)})
 
 

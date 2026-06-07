@@ -32,7 +32,7 @@ export default function Layout() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="text-xl font-bold text-blue-600 shrink-0">
-              MyBlog
+              blblblog
             </Link>
 
             {/* Search Bar - Desktop */}
@@ -53,6 +53,7 @@ export default function Layout() {
                 <>
                   <Link to="/articles/new" className="btn-primary text-sm">Write</Link>
                   <Link to="/favorites" className="text-gray-600 hover:text-blue-600 text-sm">Favorites</Link>
+                  {user.is_admin && <Link to="/admin" className="text-purple-600 hover:text-purple-700 text-sm font-medium">Admin</Link>}
                   <Link to="/profile" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 text-sm">
                     {user.avatar ? (
                       <img src={user.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
@@ -108,6 +109,7 @@ export default function Layout() {
                   <>
                     <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">Write Article</Link>
                     <Link to="/favorites" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">Favorites</Link>
+                    {user.is_admin && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-purple-600 py-2">Admin Panel</Link>}
                     <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">Profile</Link>
                     <button onClick={handleLogout} className="text-red-500 py-2 text-left">Logout</button>
                   </>
@@ -131,7 +133,7 @@ export default function Layout() {
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100 py-6 mt-12">
         <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} MyBlog. Built with FastAPI &amp; React.
+          &copy; {new Date().getFullYear()} blblblog. Built with FastAPI &amp; React.
         </div>
       </footer>
     </div>

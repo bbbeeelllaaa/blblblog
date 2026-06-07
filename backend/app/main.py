@@ -14,6 +14,7 @@ from app.api.likes import router as likes_router
 from app.api.favorites import router as favorites_router
 from app.api.search import router as search_router
 from app.api.online import router as online_router
+from app.api.admin import router as admin_router
 
 settings = get_settings()
 
@@ -26,8 +27,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="MyBlog API",
-    description="Personal Blog System API",
+    title="blblblog API",
+    description="blblblog System API",
     version="1.0.0",
     lifespan=lifespan,
     docs_url="/docs",
@@ -55,6 +56,7 @@ app.include_router(likes_router)
 app.include_router(favorites_router)
 app.include_router(search_router)
 app.include_router(online_router)
+app.include_router(admin_router)
 
 
 @app.get("/health")

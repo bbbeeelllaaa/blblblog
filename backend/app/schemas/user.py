@@ -25,6 +25,9 @@ class UserPublic(BaseModel):
     bio: str | None = None
     interests: str | None = None
     experience: str | None = None
+    is_admin: bool = False
+    last_login: datetime | None = None
+    login_count: int = 0
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -41,3 +44,14 @@ class UserUpdate(BaseModel):
     bio: str | None = None
     interests: str | None = None
     experience: str | None = None
+
+
+class UserAdminToggle(BaseModel):
+    is_admin: bool
+
+
+class DashboardStats(BaseModel):
+    total_users: int
+    total_articles: int
+    total_comments: int
+    total_likes: int

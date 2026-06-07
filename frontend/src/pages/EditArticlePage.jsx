@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import api, { articleAPI } from '../services/api';
@@ -16,25 +16,95 @@ export default function EditArticlePage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const fileRef = useRef(null);
+  const contentRef = useRef(content);
+  contentRef.current = content;
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadFile = useCallback(async (file) => {
     setUploading(true);
     try {
       const form = new FormData();
       form.append('file', file);
-      const res = await api.post('/upload/image', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const res = await api.post('/upload/image', form);
+      const md = `![](${res.data.url})`;
+      const ta = document.querySelector('.w-md-editor-text-input');
+      const cursorPos = ta ? ta.selectionStart : contentRef.current.length;
+      setContent((prev) => {
+        const start = Math.min(cursorPos, prev.length);
+        return prev.substring(0, start) + md + prev.substring(start);
       });
-      setContent((prev) => prev + `\n![](${res.data.url})\n`);
+      setTimeout(() => {
+        const ta = document.querySelector('.w-md-editor-text-input');
+        if (ta) {
+          const newPos = cursorPos + md.length;
+          ta.selectionStart = ta.selectionEnd = newPos;
+          ta.focus();
+        }
+      }, 50);
       toast.success('Image uploaded');
-    } catch {
-      toast.error('Upload failed');
+    } catch (err) {
+      const msg = err.response?.data?.detail || err.message || 'Upload failed';
+      toast.error(msg);
     } finally {
       setUploading(false);
     }
+  }, []);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    uploadFile(file);
+    e.target.value = '';
   };
+
+  const imageCommand = {
+    name: 'upload-image',
+    keyCommand: 'uploadImage',
+    buttonProps: { 'aria-label': 'Upload image from local' },
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    execute: () => fileRef.current?.click(),
+  };
+
+  useEffect(() => {
+    const editor = document.querySelector('.w-md-editor');
+    const ta = document.querySelector('.w-md-editor-text-input');
+    if (!editor || !ta) return;
+
+    const onPaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          uploadFile(item.getAsFile());
+          break;
+        }
+      }
+    };
+
+    const onDragOver = (e) => e.preventDefault();
+
+    const onDrop = (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      e.preventDefault();
+      uploadFile(file);
+    };
+
+    ta.addEventListener('paste', onPaste);
+    editor.addEventListener('dragover', onDragOver);
+    editor.addEventListener('drop', onDrop);
+
+    return () => {
+      ta.removeEventListener('paste', onPaste);
+      editor.removeEventListener('dragover', onDragOver);
+      editor.removeEventListener('drop', onDrop);
+    };
+  }, [uploadFile]);
 
   useEffect(() => {
     loadArticle();
@@ -89,14 +159,18 @@ export default function EditArticlePage() {
           placeholder="Short summary (optional)" className="input-field" />
         <input type="text" value={tags} onChange={(e) => setTags(e.target.value)}
           placeholder="Tags, comma separated" className="input-field" />
+        <input type="file" ref={fileRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
         <div data-color-mode="light">
-          <MDEditor value={content} onChange={setContent} height={500} preview="live" />
+          <MDEditor
+            value={content}
+            onChange={setContent}
+            height={500}
+            preview="live"
+            extraCommands={[imageCommand]}
+          />
         </div>
         <div className="flex gap-3 items-center">
-          <label className="btn-secondary cursor-pointer text-sm">
-            {uploading ? 'Uploading...' : 'Upload Image'}
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-          </label>
+          {uploading && <span className="text-xs text-gray-400">Uploading image...</span>}
           <button type="submit" className="btn-primary" disabled={saving}>
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
