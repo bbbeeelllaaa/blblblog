@@ -5,9 +5,9 @@ services:
     image: pgvector/pgvector:pg16
     container_name: blblblog-postgres
     environment:
-      POSTGRES_USER: blog_user
-      POSTGRES_PASSWORD: blog_password
-      POSTGRES_DB: blog_db
+      POSTGRES_USER: ${DB_USER:-blog_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-blog_password}
+      POSTGRES_DB: ${DB_NAME:-blog_db}
     ports:
       - "5432:5432"
     volumes:
@@ -34,7 +34,7 @@ services:
       context: ./backend
     container_name: blblblog-backend
     environment:
-      DATABASE_URL: postgresql+asyncpg://blog_user:blog_password@postgres:5432/blog_db
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-blog_user}:${DB_PASSWORD:-blog_password}@postgres:5432/${DB_NAME:-blog_db}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-to-a-random-secret-key-at-least-32-chars}
       JWT_ALGORITHM: HS256
       JWT_EXPIRE_MINUTES: 60
