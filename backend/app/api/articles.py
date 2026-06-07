@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, get_optional_user
 from app.models.user import User
 from app.models.article import Article
 from app.schemas.article import (
@@ -51,9 +51,18 @@ async def list_articles(
     size: int = Query(20, ge=1, le=100),
     tag: str | None = None,
     author_id: int | None = None,
+    status: str | None = None,
     db: AsyncSession = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
 ):
-    articles, total = await article_service.get_articles(db, page, size, tag, author_id)
+    # Only author can view their own drafts
+    if status == "draft":
+        if user is None:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        if author_id is None or user.id != author_id:
+            author_id = user.id
+    published_only = status != "draft"
+    articles, total = await article_service.get_articles(db, page, size, tag, author_id, published_only)
     items = []
     for a in articles:
         items.append(await _build_list_item(db, a))
@@ -64,12 +73,16 @@ async def list_articles(
 async def get_article(
     article_id: int,
     db: AsyncSession = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
 ):
     article = await article_service.get_article_by_id(db, article_id)
     if article is None:
         raise HTTPException(status_code=404, detail="Article not found")
-    result = await _build_detail(db, article)
-    await article_service.increment_view_count(db, article)
+    if not article.is_published and (user is None or user.id != article.author_id):
+        raise HTTPException(status_code=404, detail="Article not found")
+    result = await _build_detail(db, article, user.id if user else None)
+    if article.is_published:
+        await article_service.increment_view_count(db, article)
     await db.commit()
     result["view_count"] = article.view_count
     return result
@@ -115,6 +128,7 @@ async def _build_list_item(db: AsyncSession, article: Article) -> dict:
         "view_count": article.view_count,
         "like_count": like_count,
         "comment_count": comment_count,
+        "is_published": article.is_published,
         "created_at": article.created_at.isoformat(),
         "updated_at": article.updated_at.isoformat(),
     }
@@ -142,6 +156,7 @@ async def _build_detail(db: AsyncSession, article: Article, user_id: int | None 
         "comment_count": comment_count,
         "is_favorited": is_favorited,
         "is_liked": is_liked,
+        "is_published": article.is_published,
         "created_at": article.created_at.isoformat(),
         "updated_at": article.updated_at.isoformat(),
     }

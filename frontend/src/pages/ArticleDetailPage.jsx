@@ -107,7 +107,14 @@ export default function ArticleDetailPage() {
       )}
 
       {/* Title */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">{article.title}</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        {article.title}
+        {!article.is_published && (
+          <span className="ml-3 inline-block align-middle text-xs font-normal px-2 py-0.5 bg-amber-100 text-amber-700 rounded">
+            Draft
+          </span>
+        )}
+      </h1>
 
       {/* Author & Meta */}
       <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">

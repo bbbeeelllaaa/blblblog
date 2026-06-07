@@ -40,6 +40,7 @@ class ArticleListResponse(BaseModel):
     view_count: int
     like_count: int = 0
     comment_count: int = 0
+    is_published: bool = True
     created_at: datetime
     updated_at: datetime
 
@@ -60,6 +61,7 @@ class ArticleDetailResponse(BaseModel):
     comment_count: int = 0
     is_favorited: bool = False
     is_liked: bool = False
+    is_published: bool = True
     created_at: datetime
     updated_at: datetime
 

@@ -109,7 +109,7 @@ export default function CreateArticlePage() {
     return null;
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, isDraft = false) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
     setSaving(true);
@@ -119,11 +119,12 @@ export default function CreateArticlePage() {
         content: content.trim(),
         summary: summary.trim() || null,
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
+        is_published: !isDraft,
       });
-      toast.success('Article published!');
+      toast.success(isDraft ? 'Draft saved!' : 'Article published!');
       navigate(`/articles/${res.data.id}`);
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to publish'));
+      toast.error(getErrorDetail(err, 'Failed to save'));
     } finally {
       setSaving(false);
     }
@@ -132,7 +133,7 @@ export default function CreateArticlePage() {
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Write a New Article</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-4">
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
           placeholder="Article title" className="input-field text-lg font-medium" required />
         <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)}
@@ -151,10 +152,13 @@ export default function CreateArticlePage() {
         </div>
         <div className="flex gap-3 items-center">
           {uploading && <span className="text-xs text-gray-400">Uploading image...</span>}
-          <button type="submit" className="btn-primary" disabled={saving}>
+          <button type="button" onClick={(e) => handleSubmit(e, false)} className="btn-primary" disabled={saving}>
             {saving ? 'Publishing...' : 'Publish'}
           </button>
-          <button type="button" onClick={() => navigate(-1)} className="btn-secondary">Cancel</button>
+          <button type="button" onClick={(e) => handleSubmit(e, true)} className="btn-secondary" disabled={saving}>
+            {saving ? 'Saving...' : 'Save Draft'}
+          </button>
+          <button type="button" onClick={() => navigate(-1)} className="text-gray-500 text-sm hover:underline">Cancel</button>
         </div>
       </form>
     </div>

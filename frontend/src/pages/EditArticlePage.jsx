@@ -14,6 +14,7 @@ export default function EditArticlePage() {
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState('');
   const [saving, setSaving] = useState(false);
+  const [isDraft, setIsDraft] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const fileRef = useRef(null);
@@ -123,25 +124,30 @@ export default function EditArticlePage() {
       setContent(a.content);
       setSummary(a.summary || '');
       setTags(a.tags?.map((t) => t.name).join(', ') || '');
+      setIsDraft(!a.is_published);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, publishStatus = null) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await articleAPI.update(id, {
+      const data = {
         title: title.trim(),
         content: content.trim(),
         summary: summary.trim() || null,
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
-      });
-      toast.success('Article updated!');
+      };
+      if (publishStatus !== null) {
+        data.is_published = publishStatus;
+      }
+      await articleAPI.update(id, data);
+      toast.success('Saved!');
       navigate(`/articles/${id}`);
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to update'));
+      toast.error(getErrorDetail(err, 'Failed to save'));
     } finally {
       setSaving(false);
     }
@@ -152,7 +158,7 @@ export default function EditArticlePage() {
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Edit Article</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
           placeholder="Article title" className="input-field text-lg font-medium" required />
         <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)}
@@ -169,12 +175,28 @@ export default function EditArticlePage() {
             extraCommands={[imageCommand]}
           />
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center flex-wrap">
           {uploading && <span className="text-xs text-gray-400">Uploading image...</span>}
-          <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button type="button" onClick={() => navigate(`/articles/${id}`)} className="btn-secondary">Cancel</button>
+          {isDraft ? (
+            <>
+              <button type="button" onClick={(e) => handleSubmit(e, true)} className="btn-primary" disabled={saving}>
+                {saving ? 'Saving...' : 'Publish'}
+              </button>
+              <button type="button" onClick={(e) => handleSubmit(e, false)} className="btn-secondary" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Draft'}
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" onClick={(e) => handleSubmit(e)} className="btn-primary" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button type="button" onClick={(e) => handleSubmit(e, false)} className="btn-secondary" disabled={saving}>
+                {saving ? 'Saving...' : 'Unpublish'}
+              </button>
+            </>
+          )}
+          <button type="button" onClick={() => navigate(`/articles/${id}`)} className="text-gray-500 text-sm hover:underline">Cancel</button>
         </div>
       </form>
     </div>

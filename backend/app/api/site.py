@@ -3,9 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
-from app.models.article import Article, ArticleTag, article_tag_association
-from app.schemas.user import UserPublic
-from sqlalchemy import select, func, desc
+from app.models.article import ArticleTag, article_tag_association
+from sqlalchemy import select, func
 
 router = APIRouter(prefix="/site", tags=["site"])
 
@@ -29,6 +28,7 @@ async def get_sidebar_data(db: AsyncSession = Depends(get_db)):
             "experience": owner.experience,
             "intro": owner.intro,
             "links": owner.links,
+            "featured_cards": owner.featured_cards,
         }
 
     # Tags grouped by category
@@ -60,24 +60,9 @@ async def get_sidebar_data(db: AsyncSession = Depends(get_db)):
     if uncategorized:
         tag_data.append({"category": None, "tags": uncategorized})
 
-    # Owner's recent articles
-    recent_articles = []
-    if owner:
-        articles_result = await db.execute(
-            select(Article.id, Article.title, Article.created_at)
-            .where(Article.author_id == owner.id, Article.is_published == True)
-            .order_by(desc(Article.created_at))
-            .limit(10)
-        )
-        recent_articles = [
-            {"id": row.id, "title": row.title, "created_at": row.created_at.isoformat()}
-            for row in articles_result.all()
-        ]
-
     return {
         "owner": owner_data,
         "tags": tag_data,
-        "recent_articles": recent_articles,
     }
 
 
@@ -90,7 +75,7 @@ async def update_owner(
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Only admin can update owner info")
 
-    allowed = {"intro", "links", "bio", "interests", "experience"}
+    allowed = {"intro", "links", "bio", "interests", "experience", "featured_cards"}
     update_data = {k: v for k, v in data.items() if k in allowed and v is not None}
     if not update_data:
         return {"ok": False}

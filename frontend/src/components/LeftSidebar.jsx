@@ -1,23 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { useAuth } from '../hooks/useAuth';
-import { siteAPI, adminAPI, getErrorDetail } from '../services/api';
+import { siteAPI, getErrorDetail } from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function LeftSidebar() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [sidebar, setSidebar] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Editing states
+  // Bio editing
   const [editingBio, setEditingBio] = useState(false);
   const [bioText, setBioText] = useState('');
+  // Intro editing
   const [editingIntro, setEditingIntro] = useState(false);
   const [introText, setIntroText] = useState('');
+  // Links editing
   const [editingLinks, setEditingLinks] = useState(false);
   const [linksJson, setLinksJson] = useState('');
+  // Featured cards editing
+  const [editingCards, setEditingCards] = useState(false);
+  const [cardsJson, setCardsJson] = useState('');
   const [saving, setSaving] = useState(false);
 
   const isOwner = user?.is_admin && sidebar?.owner && user.id === sidebar.owner.id;
@@ -64,8 +68,9 @@ export default function LeftSidebar() {
     return <aside className="text-sm text-gray-400 py-8">No content yet</aside>;
   }
 
-  const { owner, tags = [], recent_articles = [] } = sidebar;
-  const links = parseLinks(owner.links);
+  const { owner, tags = [] } = sidebar;
+  const links = parseJson(owner.links);
+  const cards = parseJson(owner.featured_cards);
   const params = new URLSearchParams(window.location.search);
   const currentTag = params.get('tag');
 
@@ -98,13 +103,8 @@ export default function LeftSidebar() {
         )}
         {editingBio && (
           <div className="mt-2 space-y-1">
-            <textarea
-              value={bioText}
-              onChange={(e) => setBioText(e.target.value)}
-              rows={2}
-              className="input-field text-xs"
-              placeholder="Short bio..."
-            />
+            <textarea value={bioText} onChange={(e) => setBioText(e.target.value)}
+              rows={2} className="input-field text-xs" placeholder="Short bio..." />
             <div className="flex gap-1">
               <button onClick={() => { saveOwner({ bio: bioText }); setEditingBio(false); }} disabled={saving} className="text-xs text-blue-500">Save</button>
               <button onClick={() => setEditingBio(false)} className="text-xs text-gray-400">Cancel</button>
@@ -140,6 +140,55 @@ export default function LeftSidebar() {
         )}
       </section>
 
+      {/* Featured Cards */}
+      <section>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide">Featured</h3>
+          {isOwner && (
+            <button
+              onClick={() => { setCardsJson(JSON.stringify(cards, null, 2)); setEditingCards(!editingCards); }}
+              className="text-xs text-gray-400 hover:text-blue-500"
+            >
+              {editingCards ? 'Cancel' : 'Edit'}
+            </button>
+          )}
+        </div>
+        {editingCards ? (
+          <div className="space-y-1">
+            <textarea
+              value={cardsJson}
+              onChange={(e) => setCardsJson(e.target.value)}
+              rows={8}
+              className="input-field text-xs font-mono"
+              placeholder='[{"image":"https://...","title":"Title","description":"Brief description","url":"https://..."}]'
+            />
+            <button onClick={() => { saveOwner({ featured_cards: cardsJson }); setEditingCards(false); }} disabled={saving} className="btn-primary text-xs py-1 px-3">Save</button>
+          </div>
+        ) : cards.length > 0 ? (
+          <div className="space-y-3">
+            {cards.map((card, i) => (
+              <a
+                key={i}
+                href={card.url || '#'}
+                target={card.url ? '_blank' : undefined}
+                rel={card.url ? 'noopener noreferrer' : undefined}
+                className="block rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow bg-white"
+              >
+                {card.image && (
+                  <img src={card.image} alt={card.title} className="w-full h-32 object-cover" />
+                )}
+                <div className="p-3">
+                  {card.title && <div className="font-medium text-gray-900 text-xs">{card.title}</div>}
+                  {card.description && <div className="text-gray-500 text-xs mt-1 line-clamp-2">{card.description}</div>}
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-400 italic">No featured content</p>
+        )}
+      </section>
+
       {/* Links */}
       <section>
         <div className="flex items-center justify-between mb-2">
@@ -152,13 +201,9 @@ export default function LeftSidebar() {
         </div>
         {editingLinks ? (
           <div className="space-y-1">
-            <textarea
-              value={linksJson}
-              onChange={(e) => setLinksJson(e.target.value)}
-              rows={5}
-              className="input-field text-xs font-mono"
-              placeholder='[{"title":"GitHub","url":"https://github.com/..."}]'
-            />
+            <textarea value={linksJson} onChange={(e) => setLinksJson(e.target.value)}
+              rows={5} className="input-field text-xs font-mono"
+              placeholder='[{"title":"GitHub","url":"https://github.com/..."}]' />
             <button onClick={() => { saveOwner({ links: linksJson }); setEditingLinks(false); }} disabled={saving} className="btn-primary text-xs py-1 px-3">Save</button>
           </div>
         ) : links.length > 0 ? (
@@ -175,7 +220,7 @@ export default function LeftSidebar() {
         )}
       </section>
 
-      {/* Tags grouped by category */}
+      {/* Tags */}
       {tags.length > 0 && (
         <section>
           <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Tags</h3>
@@ -204,28 +249,11 @@ export default function LeftSidebar() {
           ))}
         </section>
       )}
-
-      {/* My Articles */}
-      {recent_articles.length > 0 && (
-        <section>
-          <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">My Articles</h3>
-          <div className="space-y-1.5">
-            {recent_articles.map((a) => (
-              <Link key={a.id} to={`/articles/${a.id}`} className="block text-gray-600 hover:text-blue-600 transition-colors">
-                <span className="text-xs line-clamp-1">{a.title}</span>
-                <span className="text-gray-400 text-xs ml-0 block">
-                  {new Date(a.created_at).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
     </aside>
   );
 }
 
-function parseLinks(raw) {
+function parseJson(raw) {
   if (!raw) return [];
   try {
     const parsed = JSON.parse(raw);

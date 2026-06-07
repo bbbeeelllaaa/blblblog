@@ -39,9 +39,14 @@ async def get_articles(
     size: int = 20,
     tag: str | None = None,
     author_id: int | None = None,
+    published_only: bool = True,
 ) -> tuple[list[Article], int]:
-    query = select(Article).where(Article.is_published == True)
-    count_query = select(func.count(Article.id)).where(Article.is_published == True)
+    query = select(Article)
+    count_query = select(func.count(Article.id))
+
+    if published_only:
+        query = query.where(Article.is_published == True)
+        count_query = count_query.where(Article.is_published == True)
 
     if tag:
         query = query.join(article_tag_association).join(ArticleTag).where(ArticleTag.name == tag)

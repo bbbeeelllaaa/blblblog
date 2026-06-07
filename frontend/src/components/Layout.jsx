@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import LeftSidebar from './LeftSidebar';
 import toast from 'react-hot-toast';
@@ -7,8 +7,12 @@ import toast from 'react-hot-toast';
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const isHomePage = location.pathname === '/';
+  const showSidebar = isHomePage;
 
   const handleLogout = () => {
     logout();
@@ -31,12 +35,10 @@ export default function Layout() {
       <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
             <Link to="/" className="text-xl font-bold text-blue-600 shrink-0">
               blblblog
             </Link>
 
-            {/* Search Bar - Desktop */}
             <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
               <input
                 type="text"
@@ -47,7 +49,6 @@ export default function Layout() {
               />
             </form>
 
-            {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-4">
               <Link to="/" className="text-gray-600 hover:text-blue-600 text-sm">Home</Link>
               {user ? (
@@ -126,26 +127,36 @@ export default function Layout() {
         </div>
       </nav>
 
-      {/* Main content - two column layout */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
-        <div className="flex gap-8">
-          <div className="w-[28%] shrink-0 hidden md:block">
-            <div className="sticky top-20">
-              <LeftSidebar />
+      {/* Main content */}
+      <main className="flex-1 w-full">
+        {showSidebar ? (
+          <div className="flex max-w-7xl mx-auto px-4 py-6" style={{ height: 'calc(100vh - 64px)' }}>
+            <div className="w-[28%] shrink-0 hidden md:block overflow-y-auto pr-4">
+              <div className="pb-8">
+                <LeftSidebar />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 overflow-y-auto pl-4">
+              <div className="pb-8">
+                <Outlet />
+              </div>
             </div>
           </div>
-          <div className="flex-1 min-w-0">
+        ) : (
+          <div className="max-w-4xl mx-auto px-4 py-6">
             <Outlet />
           </div>
-        </div>
+        )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-6 mt-12">
-        <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} blblblog. Built with FastAPI &amp; React.
-        </div>
-      </footer>
+      {/* Footer - only on home page */}
+      {isHomePage && (
+        <footer className="bg-white border-t border-gray-100 py-6">
+          <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; {new Date().getFullYear()} blblblog. Built with FastAPI &amp; React.
+          </div>
+        </footer>
+      )}
     </div>
   );
 }
