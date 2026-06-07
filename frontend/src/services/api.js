@@ -1,4 +1,20 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
+
+export function getErrorDetail(err, fallback = 'Something went wrong') {
+  const detail = err?.response?.data?.detail;
+  if (!detail) return fallback;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail.map((d) => d.msg || d.message || JSON.stringify(d)).join('; ');
+  }
+  if (typeof detail === 'object') return detail.msg || detail.message || fallback;
+  return fallback;
+}
+
+export function handleApiError(err, fallback = 'Something went wrong') {
+  toast.error(getErrorDetail(err, fallback));
+}
 
 const api = axios.create({
   baseURL: '/api',

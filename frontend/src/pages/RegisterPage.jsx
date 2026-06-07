@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { getErrorDetail } from '../services/api';
 
 export default function RegisterPage() {
   const { register, user } = useAuth();
@@ -24,7 +25,7 @@ export default function RegisterPage() {
       toast.success('Registration successful!');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Registration failed');
+      toast.error(getErrorDetail(err, 'Registration failed'));
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { getErrorDetail } from '../services/api';
 
 export default function LoginPage() {
   const { login, user } = useAuth();
@@ -23,7 +24,7 @@ export default function LoginPage() {
       toast.success('Welcome back!');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Login failed');
+      toast.error(getErrorDetail(err, 'Login failed'));
     } finally {
       setLoading(false);
     }

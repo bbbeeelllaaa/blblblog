@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAPI } from '../services/api';
+import { adminAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -97,7 +97,7 @@ function UsersTab() {
       await adminAPI.toggleUserAdmin(u.id, !u.is_admin);
       toast.success('Updated');
       loadUsers();
-    } catch (err) { toast.error(err.response?.data?.detail || 'Failed'); }
+    } catch (err) { toast.error(getErrorDetail(err, 'Failed')); }
   };
 
   const handleDelete = async (u) => {
@@ -106,7 +106,7 @@ function UsersTab() {
       await adminAPI.deleteUser(u.id);
       toast.success('User deleted');
       loadUsers();
-    } catch (err) { toast.error(err.response?.data?.detail || 'Failed'); }
+    } catch (err) { toast.error(getErrorDetail(err, 'Failed')); }
   };
 
   const totalPages = Math.ceil(total / size);
@@ -194,7 +194,7 @@ function ArticlesTab() {
       await adminAPI.deleteArticle(a.id);
       toast.success('Article deleted');
       loadArticles();
-    } catch (err) { toast.error(err.response?.data?.detail || 'Failed'); }
+    } catch (err) { toast.error(getErrorDetail(err, 'Failed')); }
   };
 
   const totalPages = Math.ceil(total / size);
@@ -255,7 +255,7 @@ function CommentsTab() {
       await adminAPI.deleteComment(c.id);
       toast.success('Comment deleted');
       loadComments();
-    } catch (err) { toast.error(err.response?.data?.detail || 'Failed'); }
+    } catch (err) { toast.error(getErrorDetail(err, 'Failed')); }
   };
 
   const totalPages = Math.ceil(total / size);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { commentAPI, likeAPI } from '../services/api';
+import api, { commentAPI, likeAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -72,7 +72,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
       toast.success('Comment posted');
       loadComments();
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Failed to post comment');
+      toast.error(getErrorDetail(err, 'Failed to post comment'));
     }
   };
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
-import api, { articleAPI } from '../services/api';
+import api, { articleAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
@@ -41,7 +41,7 @@ export default function CreateArticlePage() {
       }, 50);
       toast.success('Image uploaded');
     } catch (err) {
-      const msg = err.response?.data?.detail || err.message || 'Upload failed';
+      const msg = getErrorDetail(err, 'Upload failed');
       toast.error(msg);
     } finally {
       setUploading(false);
@@ -123,7 +123,7 @@ export default function CreateArticlePage() {
       toast.success('Article published!');
       navigate(`/articles/${res.data.id}`);
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Failed to publish');
+      toast.error(getErrorDetail(err, 'Failed to publish'));
     } finally {
       setSaving(false);
     }

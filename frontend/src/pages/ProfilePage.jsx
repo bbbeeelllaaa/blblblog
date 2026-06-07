@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { getErrorDetail } from '../services/api';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp'];
@@ -36,7 +37,7 @@ export default function ProfilePage() {
       await updateProfile(form);
       toast.success('Profile updated!');
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Failed to update');
+      toast.error(getErrorDetail(err, 'Failed to update'));
     } finally {
       setSaving(false);
     }
@@ -60,8 +61,7 @@ export default function ProfilePage() {
       await uploadAvatar(file);
       toast.success('Avatar updated!');
     } catch (err) {
-      const detail = err.response?.data?.detail;
-      toast.error(detail || 'Failed to upload avatar');
+      toast.error(getErrorDetail(err, 'Failed to upload avatar'));
     } finally {
       setAvatarUploading(false);
     }
