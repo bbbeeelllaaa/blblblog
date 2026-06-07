@@ -46,9 +46,12 @@ async def hybrid_search(
 
     embedding = await _get_embedding(query)
 
+    if embedding is None:
+        return await fulltext_search(db, query, page, size)
+
     result = await db.execute(sql, {
         "tsquery": tsquery,
-        "query_embedding": embedding if embedding else [0.0] * 1536,
+        "query_embedding": embedding,
         "offset": (page - 1) * size,
         "limit": size,
     })
