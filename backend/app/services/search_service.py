@@ -4,13 +4,18 @@ from sqlalchemy.orm import selectinload
 from app.models.article import Article
 
 
+def _build_tsquery(query: str) -> str:
+    """Build a tsquery string from user query, using jieba for Chinese segmentation."""
+    import jieba
+    words = [w for w in jieba.cut(query.strip()) if len(w.strip()) >= 1]
+    return " & ".join(word + ":*" for word in words)
+
+
 async def hybrid_search(
     db: AsyncSession, query: str, page: int = 1, size: int = 20
 ) -> tuple[list[Article], int]:
     """Hybrid search: full-text (tsvector) + semantic (pgvector) combined."""
-    tsquery = " & ".join(
-        word + ":*" for word in query.strip().split() if len(word) >= 1
-    )
+    tsquery = _build_tsquery(query)
 
     sql = text("""
         WITH fts_results AS (
@@ -83,30 +88,27 @@ async def hybrid_search(
 async def fulltext_search(
     db: AsyncSession, query: str, page: int = 1, size: int = 20
 ) -> tuple[list[Article], int]:
-    """Fallback full-text search when pgvector is not available."""
-    tsquery = " & ".join(
-        word + ":*" for word in query.strip().split() if len(word) >= 1
-    )
+    """Search articles by title, summary, and content using ILIKE."""
+    like_pattern = f"%{query}%"
 
     count_sql = text("""
         SELECT COUNT(*) FROM articles
-        WHERE search_vector @@ to_tsquery('simple', :tsquery)
-          AND is_published = true
+        WHERE is_published = true
+          AND (title ILIKE :q OR summary ILIKE :q OR content ILIKE :q)
     """)
-    count_result = await db.execute(count_sql, {"tsquery": tsquery})
+    count_result = await db.execute(count_sql, {"q": like_pattern})
     total = count_result.scalar() or 0
 
     sql = text("""
-        SELECT id, ts_rank(search_vector, to_tsquery('simple', :tsquery)) AS rank
-        FROM articles
-        WHERE search_vector @@ to_tsquery('simple', :tsquery)
-          AND is_published = true
-        ORDER BY rank DESC
+        SELECT id FROM articles
+        WHERE is_published = true
+          AND (title ILIKE :q OR summary ILIKE :q OR content ILIKE :q)
+        ORDER BY created_at DESC
         OFFSET :offset LIMIT :limit
     """)
 
     result = await db.execute(sql, {
-        "tsquery": tsquery,
+        "q": like_pattern,
         "offset": (page - 1) * size,
         "limit": size,
     })
@@ -120,15 +122,12 @@ async def fulltext_search(
         select(Article)
         .where(Article.id.in_(ids))
         .options(selectinload(Article.tags), selectinload(Article.author))
+        .order_by(Article.created_at.desc())
     )
-    articles_map = {a.id: a for a in articles_result.scalars().unique().all()}
+    articles = list(articles_result.scalars().unique().all())
 
-    articles = []
-    for row in rows:
-        a = articles_map.get(row.id)
-        if a:
-            a._relevance = row.rank
-            articles.append(a)
+    for a in articles:
+        a._relevance = 1.0
 
     return articles, total
 
@@ -159,6 +158,7 @@ async def update_search_vector(db: AsyncSession, article: Article) -> None:
     """Update tsvector from title and content with jieba segmentation."""
     import jieba
     title_seg = " ".join(jieba.cut(article.title))
+    summary_seg = " ".join(jieba.cut(article.summary or ""))
     content_seg = " ".join(jieba.cut(article.content[:5000]))
 
     sql = text("""
@@ -166,7 +166,7 @@ async def update_search_vector(db: AsyncSession, article: Article) -> None:
         SET search_vector = to_tsvector('simple', :text)
         WHERE id = :id
     """)
-    await db.execute(sql, {"text": f"{title_seg} {content_seg}", "id": article.id})
+    await db.execute(sql, {"text": f"{title_seg} {summary_seg} {content_seg}", "id": article.id})
 
 
 async def update_embedding(db: AsyncSession, article: Article) -> None:
