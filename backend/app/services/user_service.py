@@ -52,6 +52,69 @@ async def update_user(db: AsyncSession, user: User, data: dict) -> User:
     return user
 
 
+async def generate_reset_token(db: AsyncSession, user: User) -> str:
+    token = uuid.uuid4().hex
+    from datetime import datetime, timedelta, timezone
+    user.reset_token = token
+    user.reset_token_expires = datetime.now(timezone.utc) + timedelta(minutes=30)
+    await db.flush()
+    return token
+
+
+async def reset_password(db: AsyncSession, token: str, new_password: str) -> User | None:
+    from datetime import datetime, timezone
+    result = await db.execute(
+        select(User).where(
+            User.reset_token == token,
+            User.reset_token_expires > datetime.now(timezone.utc),
+        )
+    )
+    user = result.scalar_one_or_none()
+    if user is None:
+        return None
+    user.password_hash = hash_password(new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    await db.flush()
+    return user
+
+
+async def send_reset_email(email: str, token: str) -> bool:
+    settings = get_settings()
+    if not settings.SMTP_HOST or not settings.SMTP_USER:
+        return False
+
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    reset_url = f"{settings.SITE_URL}/reset-password?token={token}"
+    body = f"""Hi,
+
+You requested to reset your password for blblblog. Click the link below to set a new password:
+
+{reset_url}
+
+This link expires in 30 minutes. If you did not request this, please ignore this email.
+
+— blblblog"""
+
+    msg = MIMEMultipart()
+    msg["From"] = settings.SMTP_FROM or settings.SMTP_USER
+    msg["To"] = email
+    msg["Subject"] = "blblblog - Password Reset"
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    try:
+        server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT)
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        server.sendmail(msg["From"], [email], msg.as_string())
+        server.quit()
+        return True
+    except Exception:
+        return False
+
+
 async def save_avatar(db: AsyncSession, user: User, file_data: bytes, filename: str) -> str:
     ext = os.path.splitext(filename)[1] or ".png"
     new_name = f"{uuid.uuid4().hex}{ext}"

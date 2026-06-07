@@ -41,6 +41,12 @@ services:
       AI_API_KEY: ${AI_API_KEY:-}
       AI_API_BASE: ${AI_API_BASE:-https://api.openai.com/v1}
       AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      SITE_URL: ${SITE_URL:-http://47.99.50.109}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
     volumes:
       - uploads_data:/app/uploads
     restart: unless-stopped

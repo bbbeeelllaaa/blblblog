@@ -59,3 +59,12 @@ class DashboardStats(BaseModel):
     total_articles: int
     total_comments: int
     total_likes: int
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str = Field(min_length=6, max_length=128)

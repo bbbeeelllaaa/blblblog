@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
     DEBUG: bool = False
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""
+    SITE_URL: str = "http://localhost:3000"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

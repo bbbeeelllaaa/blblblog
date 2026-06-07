@@ -23,6 +23,8 @@ class User(Base):
     login_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    reset_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    reset_token_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     articles = relationship("Article", back_populates="author", lazy="selectin")
     comments = relationship("Comment", back_populates="user", lazy="selectin")
