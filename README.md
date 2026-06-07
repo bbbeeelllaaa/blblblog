@@ -33,7 +33,7 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 ## Project Structure
 
 ```
-myblog/
+blblblog/
 ├── backend/
 │   ├── app/
 │   │   ├── api/          # Route handlers (auth, users, articles, comments, likes, favorites, search, admin)
@@ -74,7 +74,7 @@ myblog/
 ```bash
 # Clone the repo
 git clone https://github.com/bbbeeelllaaa/blblblog.git
-cd myblog
+cd blblblog
 
 # Start all services
 docker compose up -d

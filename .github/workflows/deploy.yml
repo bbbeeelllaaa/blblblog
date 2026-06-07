@@ -7,8 +7,8 @@ on:
 
 env:
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-  BACKEND_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/myblog-backend
-  FRONTEND_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/myblog-frontend
+  BACKEND_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/blblblog-backend
+  FRONTEND_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/blblblog-frontend
 
 jobs:
   build-and-deploy:
@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /opt/myblog
+            cd /opt/blblblog
 
             # Create .env file from secrets
             cat > .env << EOF

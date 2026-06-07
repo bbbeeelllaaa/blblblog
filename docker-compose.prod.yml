@@ -6,7 +6,7 @@ version: "3.9"
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: myblog-postgres
+    container_name: blblblog-postgres
     environment:
       POSTGRES_USER: blog_user
       POSTGRES_PASSWORD: blog_password
@@ -22,7 +22,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: myblog-redis
+    container_name: blblblog-redis
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -31,8 +31,8 @@ services:
       retries: 5
 
   backend:
-    image: myblog-backend:latest
-    container_name: myblog-backend
+    image: blblblog-backend:latest
+    container_name: blblblog-backend
     environment:
       DATABASE_URL: postgresql+asyncpg://blog_user:blog_password@postgres:5432/blog_db
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
@@ -58,15 +58,15 @@ services:
       "
 
   frontend:
-    image: myblog-frontend:latest
-    container_name: myblog-frontend
+    image: blblblog-frontend:latest
+    container_name: blblblog-frontend
     restart: unless-stopped
     depends_on:
       - backend
 
   nginx:
     image: nginx:alpine
-    container_name: myblog-nginx
+    container_name: blblblog-nginx
     ports:
       - "80:80"
       - "443:443"
