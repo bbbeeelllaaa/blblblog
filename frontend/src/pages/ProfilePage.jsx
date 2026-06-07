@@ -152,8 +152,8 @@ export default function ProfilePage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Interests</label>
-            <input name="interests" value={form.interests} onChange={handleChange}
-              className="input-field" placeholder="e.g. Python, React, Machine Learning" />
+            <textarea name="interests" value={form.interests} onChange={handleChange} rows={3}
+              className="input-field resize-none" placeholder="e.g. Python&#10;React&#10;Machine Learning" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>

@@ -15,6 +15,8 @@ class User(Base):
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
     interests: Mapped[str | None] = mapped_column(Text, nullable=True)
     experience: Mapped[str | None] = mapped_column(Text, nullable=True)
+    intro: Mapped[str | None] = mapped_column(Text, nullable=True)
+    links: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON array of {"title","url"}
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     login_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

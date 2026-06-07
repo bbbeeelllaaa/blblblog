@@ -15,6 +15,7 @@ from app.api.favorites import router as favorites_router
 from app.api.search import router as search_router
 from app.api.online import router as online_router
 from app.api.admin import router as admin_router
+from app.api.site import router as site_router
 
 settings = get_settings()
 
@@ -57,6 +58,7 @@ app.include_router(favorites_router)
 app.include_router(search_router)
 app.include_router(online_router)
 app.include_router(admin_router)
+app.include_router(site_router)
 
 
 @app.get("/health")

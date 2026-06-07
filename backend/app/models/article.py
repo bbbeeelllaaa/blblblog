@@ -44,5 +44,6 @@ class ArticleTag(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    category: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
 
     articles = relationship("Article", secondary=article_tag_association, back_populates="tags", lazy="selectin")

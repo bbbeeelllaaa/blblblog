@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import LeftSidebar from './LeftSidebar';
 import toast from 'react-hot-toast';
 
 export default function Layout() {
@@ -125,9 +126,18 @@ export default function Layout() {
         </div>
       </nav>
 
-      {/* Main content */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-6">
-        <Outlet />
+      {/* Main content - two column layout */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
+        <div className="flex gap-8">
+          <div className="w-[28%] shrink-0 hidden md:block">
+            <div className="sticky top-20">
+              <LeftSidebar />
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <Outlet />
+          </div>
+        </div>
       </main>
 
       {/* Footer */}

@@ -113,6 +113,14 @@ export const adminAPI = {
   listComments: (params) => api.get('/admin/comments', { params }),
   deleteComment: (commentId) => api.delete(`/admin/comments/${commentId}`),
   getStats: () => api.get('/admin/stats'),
+  listTags: () => api.get('/admin/tags'),
+  updateTag: (tagId, data) => api.put(`/admin/tags/${tagId}`, data),
+};
+
+// Site (sidebar)
+export const siteAPI = {
+  getSidebar: () => api.get('/site/sidebar'),
+  updateOwner: (data) => api.put('/site/owner', data),
 };
 
 export default api;

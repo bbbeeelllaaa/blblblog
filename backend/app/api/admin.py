@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import require_admin
 from app.models.user import User
+from app.models.article import ArticleTag
 from app.schemas.user import UserAdminToggle, DashboardStats
 from app.services import admin_service, article_service
 
@@ -126,6 +128,35 @@ async def admin_delete_comment(
     deleted = await admin_service.delete_comment_admin(db, comment_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Comment not found")
+
+
+@router.get("/tags")
+async def admin_list_tags(
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(ArticleTag).order_by(ArticleTag.name))
+    tags = result.scalars().all()
+    return [{"id": t.id, "name": t.name, "category": t.category} for t in tags]
+
+
+@router.put("/tags/{tag_id}")
+async def admin_update_tag(
+    tag_id: int,
+    data: dict,
+    admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    tag = await db.get(ArticleTag, tag_id)
+    if not tag:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    if "category" in data:
+        tag.category = data["category"]
+    if "name" in data:
+        tag.name = data["name"]
+    await db.flush()
+    await db.refresh(tag)
+    return {"id": tag.id, "name": tag.name, "category": tag.category}
 
 
 @router.get("/stats", response_model=DashboardStats)

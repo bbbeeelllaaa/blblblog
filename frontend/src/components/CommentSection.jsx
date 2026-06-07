@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api, { commentAPI, likeAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -92,16 +92,18 @@ export default function CommentSection({ articleId, refreshTrigger }) {
   const renderComment = (comment, isReply = false) => (
     <div key={comment.id} className={`${isReply ? 'ml-8 mt-2' : 'border-b border-gray-100 py-4'}`}>
       <div className="flex items-start gap-3">
-        {comment.user_avatar ? (
-          <img src={comment.user_avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white text-xs font-medium shrink-0">
-            {comment.username?.[0]?.toUpperCase()}
-          </div>
-        )}
+        <Link to={`/users/${comment.user_id}`}>
+          {comment.user_avatar ? (
+            <img src={comment.user_avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white text-xs font-medium shrink-0">
+              {comment.username?.[0]?.toUpperCase()}
+            </div>
+          )}
+        </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-medium text-gray-900">{comment.username}</span>
+            <Link to={`/users/${comment.user_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600">{comment.username}</Link>
             <span className="text-xs text-gray-400">
               {new Date(comment.created_at).toLocaleString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
             </span>

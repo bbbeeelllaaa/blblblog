@@ -57,7 +57,7 @@ export default function UserProfilePage() {
         {profile?.interests && (
           <div className="mt-3">
             <span className="text-xs text-gray-400">Interests: </span>
-            <span className="text-sm text-gray-600">{profile.interests}</span>
+            <span className="text-sm text-gray-600 whitespace-pre-wrap">{profile.interests}</span>
           </div>
         )}
         {profile?.experience && (

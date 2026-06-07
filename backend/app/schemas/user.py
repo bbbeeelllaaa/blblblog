@@ -25,6 +25,8 @@ class UserPublic(BaseModel):
     bio: str | None = None
     interests: str | None = None
     experience: str | None = None
+    intro: str | None = None
+    links: str | None = None
     is_admin: bool = False
     last_login: datetime | None = None
     login_count: int = 0
@@ -44,6 +46,8 @@ class UserUpdate(BaseModel):
     bio: str | None = None
     interests: str | None = None
     experience: str | None = None
+    intro: str | None = None
+    links: str | None = None
 
 
 class UserAdminToggle(BaseModel):
