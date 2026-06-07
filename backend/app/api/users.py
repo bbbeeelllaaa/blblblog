@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -32,18 +33,33 @@ async def update_me(
     return updated
 
 
+ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"}
+
+
 @router.post("/me/avatar")
 async def upload_avatar(
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file selected")
+
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type: {ext}. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}",
+        )
+
     if file.content_type and not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed")
 
     content = await file.read()
+    if len(content) == 0:
+        raise HTTPException(status_code=400, detail="Empty file")
     if len(content) > settings.MAX_UPLOAD_SIZE:
-        raise HTTPException(status_code=400, detail="File too large")
+        raise HTTPException(status_code=400, detail=f"File too large (max {settings.MAX_UPLOAD_SIZE // (1024*1024)}MB)")
 
-    avatar_url = await save_avatar(db, user, content, file.filename or "avatar.png")
+    avatar_url = await save_avatar(db, user, content, file.filename)
     return {"avatar_url": avatar_url}

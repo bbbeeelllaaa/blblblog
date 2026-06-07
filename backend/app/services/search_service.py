@@ -4,33 +4,52 @@ from sqlalchemy.orm import selectinload
 from app.models.article import Article
 
 
-def _build_tsquery(query: str) -> str:
-    """Build a tsquery string from user query, using jieba for Chinese segmentation."""
+def _build_tsquery(query: str) -> str | None:
+    """Build a tsquery string from user query, using jieba for Chinese segmentation.
+    Uses OR (|) for better recall. Returns None if no valid tokens."""
     import jieba
     words = [w for w in jieba.cut(query.strip()) if len(w.strip()) >= 1]
-    return " & ".join(word + ":*" for word in words)
+    if not words:
+        return None
+    return " | ".join(word + ":*" for word in words)
 
 
 async def hybrid_search(
-    db: AsyncSession, query: str, page: int = 1, size: int = 20
+    db: AsyncSession, query: str, page: int = 1, size: int = 20, tag: str | None = None
 ) -> tuple[list[Article], int]:
     """Hybrid search: full-text (tsvector) + semantic (pgvector) combined."""
     tsquery = _build_tsquery(query)
+    if tsquery is None:
+        return await fulltext_search(db, query, page, size, tag)
 
-    sql = text("""
+    embedding = await _get_embedding(query)
+    if embedding is None:
+        return await fulltext_search(db, query, page, size, tag)
+
+    tag_join = ""
+    tag_where = ""
+    if tag:
+        tag_join = "JOIN article_tag_association ata ON a.id = ata.article_id JOIN article_tags t ON ata.tag_id = t.id"
+        tag_where = "AND t.name = :tag"
+
+    sql = text(f"""
         WITH fts_results AS (
             SELECT a.id,
                    ts_rank(a.search_vector, to_tsquery('simple', :tsquery)) AS fts_rank
             FROM articles a
+            {tag_join}
             WHERE a.search_vector @@ to_tsquery('simple', :tsquery)
               AND a.is_published = true
+              {tag_where}
         ),
         vec_results AS (
             SELECT a.id,
                    1.0 - (a.embedding <=> :query_embedding) AS vec_sim
             FROM articles a
+            {tag_join}
             WHERE a.embedding IS NOT NULL
               AND a.is_published = true
+              {tag_where}
             ORDER BY a.embedding <=> :query_embedding
             LIMIT 50
         ),
@@ -49,17 +68,16 @@ async def hybrid_search(
         OFFSET :offset LIMIT :limit
     """)
 
-    embedding = await _get_embedding(query)
-
-    if embedding is None:
-        return await fulltext_search(db, query, page, size)
-
-    result = await db.execute(sql, {
+    params = {
         "tsquery": tsquery,
         "query_embedding": embedding,
         "offset": (page - 1) * size,
         "limit": size,
-    })
+    }
+    if tag:
+        params["tag"] = tag
+
+    result = await db.execute(sql, params)
 
     rows = result.fetchall()
     if not rows:
@@ -86,48 +104,73 @@ async def hybrid_search(
 
 
 async def fulltext_search(
-    db: AsyncSession, query: str, page: int = 1, size: int = 20
+    db: AsyncSession, query: str, page: int = 1, size: int = 20, tag: str | None = None
 ) -> tuple[list[Article], int]:
     """Search articles by title, summary, and content using ILIKE."""
     like_pattern = f"%{query}%"
 
-    count_sql = text("""
-        SELECT COUNT(*) FROM articles
-        WHERE is_published = true
-          AND (title ILIKE :q OR summary ILIKE :q OR content ILIKE :q)
+    tag_join = ""
+    tag_where = ""
+    if tag:
+        tag_join = "JOIN article_tag_association ata ON a.id = ata.article_id JOIN article_tags t ON ata.tag_id = t.id"
+        tag_where = "AND t.name = :tag"
+
+    count_sql = text(f"""
+        SELECT COUNT(*) FROM articles a
+        {tag_join}
+        WHERE a.is_published = true
+          AND (a.title ILIKE :q OR a.summary ILIKE :q OR a.content ILIKE :q)
+          {tag_where}
     """)
-    count_result = await db.execute(count_sql, {"q": like_pattern})
+    count_params = {"q": like_pattern}
+    if tag:
+        count_params["tag"] = tag
+    count_result = await db.execute(count_sql, count_params)
     total = count_result.scalar() or 0
 
-    sql = text("""
-        SELECT id FROM articles
-        WHERE is_published = true
-          AND (title ILIKE :q OR summary ILIKE :q OR content ILIKE :q)
-        ORDER BY created_at DESC
+    sql = text(f"""
+        SELECT a.id,
+               (CASE WHEN a.title ILIKE :q THEN 3.0 ELSE 0.0 END +
+                CASE WHEN a.summary ILIKE :q THEN 2.0 ELSE 0.0 END +
+                CASE WHEN a.content ILIKE :q THEN 1.0 ELSE 0.0 END) AS relevance
+        FROM articles a
+        {tag_join}
+        WHERE a.is_published = true
+          AND (a.title ILIKE :q OR a.summary ILIKE :q OR a.content ILIKE :q)
+          {tag_where}
+        ORDER BY relevance DESC, a.created_at DESC
         OFFSET :offset LIMIT :limit
     """)
 
-    result = await db.execute(sql, {
+    params = {
         "q": like_pattern,
         "offset": (page - 1) * size,
         "limit": size,
-    })
+    }
+    if tag:
+        params["tag"] = tag
+
+    result = await db.execute(sql, params)
 
     rows = result.fetchall()
     if not rows:
         return [], total
 
-    ids = [row.id for row in rows]
+    id_relevance = {row.id: row.relevance / 6.0 for row in rows}
+    ids = list(id_relevance.keys())
     articles_result = await db.execute(
         select(Article)
         .where(Article.id.in_(ids))
         .options(selectinload(Article.tags), selectinload(Article.author))
-        .order_by(Article.created_at.desc())
     )
-    articles = list(articles_result.scalars().unique().all())
+    articles_map = {a.id: a for a in articles_result.scalars().unique().all()}
 
-    for a in articles:
-        a._relevance = 1.0
+    articles = []
+    for aid in ids:
+        a = articles_map.get(aid)
+        if a:
+            a._relevance = id_relevance[aid]
+            articles.append(a)
 
     return articles, total
 

@@ -1,5 +1,6 @@
 import os
 import uuid
+import aiofiles
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
@@ -57,8 +58,8 @@ async def save_avatar(db: AsyncSession, user: User, file_data: bytes, filename: 
     upload_dir = settings.UPLOAD_DIR
     os.makedirs(upload_dir, exist_ok=True)
     filepath = os.path.join(upload_dir, new_name)
-    with open(filepath, "wb") as f:
-        f.write(file_data)
+    async with aiofiles.open(filepath, "wb") as f:
+        await f.write(file_data)
     avatar_url = f"/uploads/{new_name}"
     user.avatar = avatar_url
     await db.flush()

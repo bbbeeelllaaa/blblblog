@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.schemas.article import ArticleSearchResult
 from app.services import search_service
 from app.services.article_service import get_article_like_count, get_article_comment_count
 
@@ -13,11 +12,10 @@ async def search_articles(
     q: str = Query(..., min_length=1),
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
+    tag: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
 ):
-    articles, total = await search_service.hybrid_search(db, q, page, size)
-    if not articles and total == 0:
-        articles, total = await search_service.fulltext_search(db, q, page, size)
+    articles, total = await search_service.hybrid_search(db, q, page, size, tag)
 
     items = []
     for a in articles:
@@ -27,7 +25,10 @@ async def search_articles(
             "summary": a.summary,
             "author_id": a.author_id,
             "author_name": a.author.username if a.author else "Unknown",
+            "author_avatar": a.author.avatar if a.author else None,
             "tags": [{"id": t.id, "name": t.name} for t in (a.tags or [])],
+            "like_count": await get_article_like_count(db, a.id),
+            "comment_count": await get_article_comment_count(db, a.id),
             "created_at": a.created_at,
             "relevance": getattr(a, "_relevance", 0.0),
         })
