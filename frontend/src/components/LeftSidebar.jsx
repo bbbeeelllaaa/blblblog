@@ -142,10 +142,10 @@ export default function LeftSidebar() {
         </section>
       )}
 
-      {/* Featured Cards */}
+      {/* Featured / Daily Push */}
       <section className="sidebar-card">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-800">Featured</h3>
+          <h3 className="text-sm font-semibold text-gray-800">每日推送</h3>
           {isOwner && (
             <button
               onClick={() => { setCardsJson(JSON.stringify(cards, null, 2)); setEditingCards(!editingCards); }}
