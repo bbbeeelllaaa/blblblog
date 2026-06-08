@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import LeftSidebar from './LeftSidebar';
 import toast from 'react-hot-toast';
+
+const scrollCache = {};
+let prevPath = null;
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -10,6 +13,29 @@ export default function Layout() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const rightPanelRef = useRef(null);
+  const leftPanelRef = useRef(null);
+
+  // Save scroll before route change, restore on new route
+  useEffect(() => {
+    const right = rightPanelRef.current;
+    const left = leftPanelRef.current;
+    if (right && prevPath && prevPath !== location.pathname) {
+      scrollCache[prevPath] = { right: right.scrollTop, left: left?.scrollTop || 0 };
+    }
+    prevPath = location.pathname;
+
+    const saved = scrollCache[location.pathname];
+    if (saved && right) {
+      requestAnimationFrame(() => {
+        right.scrollTop = saved.right;
+        if (left) left.scrollTop = saved.left;
+      });
+    } else if (right) {
+      right.scrollTop = 0;
+      if (left) left.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   const isHomePage = location.pathname === '/';
   const showSidebar = isHomePage;
@@ -131,12 +157,12 @@ export default function Layout() {
       <main className="flex-1 w-full">
         {showSidebar ? (
           <div className="flex max-w-7xl mx-auto px-4 py-6" style={{ height: 'calc(100vh - 64px)' }}>
-            <div className="w-[40%] shrink-0 hidden md:block overflow-y-auto pr-4">
+            <div ref={leftPanelRef} className="w-[40%] shrink-0 hidden md:block overflow-y-auto pr-4">
               <div className="pb-8">
                 <LeftSidebar />
               </div>
             </div>
-            <div className="flex-1 min-w-0 overflow-y-auto pl-4">
+            <div ref={rightPanelRef} className="flex-1 min-w-0 overflow-y-auto pl-4">
               <div className="pb-8">
                 <Outlet />
               </div>

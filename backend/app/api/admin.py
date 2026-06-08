@@ -49,7 +49,7 @@ async def admin_toggle_user_admin(
     user.is_admin = data.is_admin
     await db.flush()
     await db.refresh(user)
-    return user
+    return {"id": user.id, "username": user.username, "is_admin": user.is_admin}
 
 
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
