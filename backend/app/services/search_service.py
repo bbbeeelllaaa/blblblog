@@ -156,7 +156,7 @@ async def fulltext_search(
     if not rows:
         return [], total
 
-    id_relevance = {row.id: row.relevance / 6.0 for row in rows}
+    id_relevance = {row.id: float(row.relevance) / 6.0 for row in rows}
     ids = list(id_relevance.keys())
     articles_result = await db.execute(
         select(Article)
