@@ -131,7 +131,7 @@ export default function Layout() {
       <main className="flex-1 w-full">
         {showSidebar ? (
           <div className="flex max-w-7xl mx-auto px-4 py-6" style={{ height: 'calc(100vh - 64px)' }}>
-            <div className="w-[28%] shrink-0 hidden md:block overflow-y-auto pr-4">
+            <div className="w-[40%] shrink-0 hidden md:block overflow-y-auto pr-4">
               <div className="pb-8">
                 <LeftSidebar />
               </div>
