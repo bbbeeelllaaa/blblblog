@@ -50,8 +50,9 @@ async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depend
     if user is None:
         return {"message": "If the email exists, a reset link has been sent"}
     token = await generate_reset_token(db, user)
+    email = user.email
     await db.commit()
-    await send_reset_email(user.email, token)
+    await send_reset_email(email, token)
     return {"message": "If the email exists, a reset link has been sent"}
 
 

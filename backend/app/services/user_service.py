@@ -110,8 +110,12 @@ This link expires in 30 minutes. If you did not request this, please ignore this
         server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
         server.sendmail(msg["From"], [email], msg.as_string())
         server.quit()
+        import logging
+        logging.getLogger(__name__).info(f"Reset email sent to {email}")
         return True
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).exception(f"Failed to send reset email to {email}: {e}")
         return False
 
 
