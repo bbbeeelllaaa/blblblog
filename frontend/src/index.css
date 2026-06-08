@@ -24,9 +24,55 @@
   .card {
     @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
   }
+  .sidebar-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-4;
+  }
 }
 
-/* Markdown editor custom styles */
+/* Markdown rendered content */
+.wmde-markdown {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: #374151;
+  background: transparent !important;
+}
+
+.wmde-markdown h1, .wmde-markdown h2, .wmde-markdown h3,
+.wmde-markdown h4, .wmde-markdown h5, .wmde-markdown h6 {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 600;
+  border-bottom: none !important;
+}
+
+.wmde-markdown p, .wmde-markdown li, .wmde-markdown span {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+.wmde-markdown code {
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace !important;
+  font-size: 0.85em;
+}
+
+.wmde-markdown pre {
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace !important;
+}
+
+/* Markdown editor textarea font */
+.w-md-editor-text-input,
+.w-md-editor-text-pre > code,
+.w-md-editor-text-pre {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 0.875rem !important;
+  line-height: 1.75 !important;
+}
+
 .w-md-editor {
   min-height: 400px !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden;
+}
+
+.w-md-editor-toolbar {
+  border-radius: 0.75rem 0.75rem 0 0 !important;
 }

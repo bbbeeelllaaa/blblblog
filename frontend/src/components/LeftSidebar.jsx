@@ -114,16 +114,28 @@ export default function LeftSidebar() {
       </section>
 
       {/* Intro (Markdown) */}
-      <section>
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide">About</h3>
-          {isOwner && !editingIntro && (
-            <button onClick={() => { setIntroText(owner.intro || ''); setEditingIntro(true); }} className="text-xs text-gray-400 hover:text-blue-500">
-              Edit
-            </button>
+      {!editingIntro && (
+        <section className="sidebar-card">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-gray-800">About</h3>
+            {isOwner && (
+              <button onClick={() => { setIntroText(owner.intro || ''); setEditingIntro(true); }} className="text-xs text-gray-400 hover:text-blue-500">
+                Edit
+              </button>
+            )}
+          </div>
+          {owner.intro ? (
+            <div data-color-mode="light">
+              <MDEditor.Markdown source={owner.intro} />
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400 italic">Nothing written yet</p>
           )}
-        </div>
-        {editingIntro ? (
+        </section>
+      )}
+      {editingIntro && (
+        <section className="sidebar-card">
+          <h3 className="text-sm font-semibold text-gray-800 mb-2">About</h3>
           <div className="space-y-2" data-color-mode="light">
             <MDEditor value={introText} onChange={setIntroText} height={200} preview="edit" />
             <div className="flex gap-2">
@@ -131,19 +143,13 @@ export default function LeftSidebar() {
               <button onClick={() => setEditingIntro(false)} className="btn-secondary text-xs py-1 px-3">Cancel</button>
             </div>
           </div>
-        ) : owner.intro ? (
-          <div data-color-mode="light" className="prose prose-sm max-w-none text-gray-600">
-            <MDEditor.Markdown source={owner.intro} />
-          </div>
-        ) : (
-          <p className="text-xs text-gray-400 italic">Nothing written yet</p>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* Featured Cards */}
-      <section>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide">Featured</h3>
+      <section className="sidebar-card">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-gray-800">Featured</h3>
           {isOwner && (
             <button
               onClick={() => { setCardsJson(JSON.stringify(cards, null, 2)); setEditingCards(!editingCards); }}
@@ -154,7 +160,7 @@ export default function LeftSidebar() {
           )}
         </div>
         {editingCards ? (
-          <div className="space-y-1">
+          <div className="space-y-2">
             <textarea
               value={cardsJson}
               onChange={(e) => setCardsJson(e.target.value)}
@@ -172,13 +178,13 @@ export default function LeftSidebar() {
                 href={card.url || '#'}
                 target={card.url ? '_blank' : undefined}
                 rel={card.url ? 'noopener noreferrer' : undefined}
-                className="block rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow bg-white"
+                className="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all bg-white"
               >
                 {card.image && (
                   <img src={card.image} alt={card.title} className="w-full h-32 object-cover" />
                 )}
                 <div className="p-3">
-                  {card.title && <div className="font-medium text-gray-900 text-xs">{card.title}</div>}
+                  {card.title && <div className="font-semibold text-gray-800 text-sm">{card.title}</div>}
                   {card.description && <div className="text-gray-500 text-xs mt-1 line-clamp-2">{card.description}</div>}
                 </div>
               </a>
