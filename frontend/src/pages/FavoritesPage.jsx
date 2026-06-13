@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { favoriteAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import ArticleCard from '../components/ArticleCard';
+import Pagination from '../components/Pagination';
 
 export default function FavoritesPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
@@ -34,14 +37,14 @@ export default function FavoritesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">My Favorites ({total})</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('favorites.myFavorites', { total })}</h1>
 
       {loading ? (
-        <div className="text-center py-8 text-gray-400">Loading...</div>
+        <div className="text-center py-8 text-gray-400">{t('favorites.loading')}</div>
       ) : favorites.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          <p className="text-lg">No favorites yet</p>
-          <p className="text-sm mt-1">Browse articles and click the favorite button to save them here.</p>
+          <p className="text-lg">{t('favorites.noFavorites')}</p>
+          <p className="text-sm mt-1">{t('favorites.noFavoritesHint')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -66,17 +69,11 @@ export default function FavoritesPage() {
         </div>
       )}
 
-      {total > 20 && (
-        <div className="flex justify-center gap-3 mt-8">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-secondary">
-            Previous
-          </button>
-          <span className="text-gray-500 self-center">Page {page} / {Math.ceil(total / 20)}</span>
-          <button onClick={() => setPage((p) => p + 1)} disabled={page >= Math.ceil(total / 20)} className="btn-secondary">
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        page={page}
+        totalPages={Math.ceil(total / 20)}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

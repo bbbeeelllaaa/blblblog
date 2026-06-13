@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 import { getErrorDetail } from '../services/api';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const { register, user } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -22,10 +24,10 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(username, email, password);
-      toast.success('Registration successful!');
+      toast.success(t('auth.registrationSuccess'));
       navigate('/');
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Registration failed'));
+      toast.error(getErrorDetail(err, t('auth.registrationFailed')));
     } finally {
       setLoading(false);
     }
@@ -34,10 +36,10 @@ export default function RegisterPage() {
   return (
     <div className="max-w-md mx-auto mt-12">
       <div className="card">
-        <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">{t('auth.register')}</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.username')}</label>
             <input
               type="text"
               value={username}
@@ -49,7 +51,7 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
             <input
               type="email"
               value={email}
@@ -59,7 +61,7 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
             <input
               type="password"
               value={password}
@@ -70,11 +72,11 @@ export default function RegisterPage() {
             />
           </div>
           <button type="submit" className="btn-primary w-full" disabled={loading}>
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? t('auth.registering') : t('auth.register')}
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+          {t('auth.hasAccount')} <Link to="/login" className="text-blue-600 hover:underline">{t('auth.login')}</Link>
         </p>
       </div>
     </div>

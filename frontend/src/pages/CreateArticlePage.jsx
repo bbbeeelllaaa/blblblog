@@ -4,8 +4,10 @@ import MDEditor from '@uiw/react-md-editor';
 import api, { articleAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function CreateArticlePage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -39,9 +41,9 @@ export default function CreateArticlePage() {
           ta.focus();
         }
       }, 50);
-      toast.success('Image uploaded');
+      toast.success(t('article.imageUploaded'));
     } catch (err) {
-      const msg = getErrorDetail(err, 'Upload failed');
+      const msg = getErrorDetail(err, t('article.uploadFailed'));
       toast.error(msg);
     } finally {
       setUploading(false);
@@ -58,7 +60,7 @@ export default function CreateArticlePage() {
   const imageCommand = {
     name: 'upload-image',
     keyCommand: 'uploadImage',
-    buttonProps: { 'aria-label': 'Upload image from local' },
+    buttonProps: { 'aria-label': t('article.uploadFromLocal') },
     icon: (
       <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -121,10 +123,10 @@ export default function CreateArticlePage() {
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
         is_published: !isDraft,
       });
-      toast.success(isDraft ? 'Draft saved!' : 'Article published!');
+      toast.success(isDraft ? t('article.draftSaved') : t('article.articlePublished'));
       navigate(`/articles/${res.data.id}`);
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to save'));
+      toast.error(getErrorDetail(err, t('article.failedToSave')));
     } finally {
       setSaving(false);
     }
@@ -132,14 +134,14 @@ export default function CreateArticlePage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Write a New Article</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('article.writeNew')}</h1>
       <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-4">
         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-          placeholder="Article title" className="input-field text-lg font-medium" required />
+          placeholder={t('article.titlePlaceholder')} className="input-field text-lg font-medium" required />
         <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)}
-          placeholder="Short summary (optional)" className="input-field" />
+          placeholder={t('article.summaryPlaceholder')} className="input-field" />
         <input type="text" value={tags} onChange={(e) => setTags(e.target.value)}
-          placeholder="Tags, comma separated" className="input-field" />
+          placeholder={t('article.tagsPlaceholder')} className="input-field" />
         <input type="file" ref={fileRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
         <div data-color-mode="light">
           <MDEditor
@@ -151,14 +153,14 @@ export default function CreateArticlePage() {
           />
         </div>
         <div className="flex gap-3 items-center">
-          {uploading && <span className="text-xs text-gray-400">Uploading image...</span>}
+          {uploading && <span className="text-xs text-gray-400">{t('article.uploadingImage')}</span>}
           <button type="button" onClick={(e) => handleSubmit(e, false)} className="btn-primary" disabled={saving}>
-            {saving ? 'Publishing...' : 'Publish'}
+            {saving ? t('article.publishing') : t('article.publish')}
           </button>
           <button type="button" onClick={(e) => handleSubmit(e, true)} className="btn-secondary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Draft'}
+            {saving ? t('article.savingDraft') : t('article.saveDraft')}
           </button>
-          <button type="button" onClick={() => navigate(-1)} className="text-gray-500 text-sm hover:underline">Cancel</button>
+          <button type="button" onClick={() => navigate(-1)} className="text-gray-500 text-sm hover:underline">{t('common.cancel')}</button>
         </div>
       </form>
     </div>

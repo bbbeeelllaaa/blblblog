@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MDEditor from '@uiw/react-md-editor';
 import { useAuth } from '../hooks/useAuth';
 import { siteAPI, getErrorDetail } from '../services/api';
@@ -8,6 +9,7 @@ import FeaturedCardsEditor from './FeaturedCardsEditor';
 import toast from 'react-hot-toast';
 
 export default function LeftSidebar() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [sidebar, setSidebar] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,10 +45,10 @@ export default function LeftSidebar() {
     setSaving(true);
     try {
       await siteAPI.updateOwner(data);
-      toast.success('Saved');
+      toast.success(t('common.save'));
       loadSidebar();
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to save'));
+      toast.error(getErrorDetail(err, t('common.failed')));
     } finally {
       setSaving(false);
     }
@@ -63,7 +65,7 @@ export default function LeftSidebar() {
   }
 
   if (!sidebar?.owner) {
-    return <aside className="text-sm text-gray-400 py-8">No content yet</aside>;
+    return <aside className="text-sm text-gray-400 py-8">{t('sidebar.noContent')}</aside>;
   }
 
   const { owner, tags = [] } = sidebar;
@@ -86,7 +88,7 @@ export default function LeftSidebar() {
           <div>
             <div className="font-semibold text-gray-900">{owner.username}</div>
             {!editingBio && (
-              <p className="text-xs text-gray-500 mt-0.5">{owner.bio || 'No bio yet'}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{owner.bio || t('sidebar.noBio')}</p>
             )}
           </div>
         </Link>
@@ -95,16 +97,16 @@ export default function LeftSidebar() {
             onClick={() => { setBioText(owner.bio || ''); setEditingBio(true); }}
             className="text-xs text-gray-400 hover:text-blue-500 mt-1"
           >
-            Edit bio
+            {t('sidebar.editBio')}
           </button>
         )}
         {editingBio && (
           <div className="mt-2 space-y-1">
             <textarea value={bioText} onChange={(e) => setBioText(e.target.value)}
-              rows={2} className="input-field text-xs" placeholder="Short bio..." />
+              rows={2} className="input-field text-xs" placeholder={t('sidebar.shortBio')} />
             <div className="flex gap-1">
-              <button onClick={() => { saveOwner({ bio: bioText }); setEditingBio(false); }} disabled={saving} className="text-xs text-blue-500">Save</button>
-              <button onClick={() => setEditingBio(false)} className="text-xs text-gray-400">Cancel</button>
+              <button onClick={() => { saveOwner({ bio: bioText }); setEditingBio(false); }} disabled={saving} className="text-xs text-blue-500">{t('common.save')}</button>
+              <button onClick={() => setEditingBio(false)} className="text-xs text-gray-400">{t('common.cancel')}</button>
             </div>
           </div>
         )}
@@ -114,10 +116,10 @@ export default function LeftSidebar() {
       {!editingIntro && (
         <section className="sidebar-card">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-gray-800">About</h3>
+            <h3 className="text-sm font-semibold text-gray-800">{t('sidebar.about')}</h3>
             {isOwner && (
               <button onClick={() => { setIntroText(owner.intro || ''); setEditingIntro(true); }} className="text-xs text-gray-400 hover:text-blue-500">
-                Edit
+                {t('common.edit')}
               </button>
             )}
           </div>
@@ -126,18 +128,18 @@ export default function LeftSidebar() {
               <MDEditor.Markdown source={owner.intro} />
             </div>
           ) : (
-            <p className="text-xs text-gray-400 italic">Nothing written yet</p>
+            <p className="text-xs text-gray-400 italic">{t('sidebar.nothingWritten')}</p>
           )}
         </section>
       )}
       {editingIntro && (
         <section className="sidebar-card">
-          <h3 className="text-sm font-semibold text-gray-800 mb-2">About</h3>
+          <h3 className="text-sm font-semibold text-gray-800 mb-2">{t('sidebar.about')}</h3>
           <div className="space-y-2" data-color-mode="light">
             <MDEditor value={introText} onChange={setIntroText} height={200} preview="edit" />
             <div className="flex gap-2">
-              <button onClick={() => { saveOwner({ intro: introText }); setEditingIntro(false); }} disabled={saving} className="btn-primary text-xs py-1 px-3">Save</button>
-              <button onClick={() => setEditingIntro(false)} className="btn-secondary text-xs py-1 px-3">Cancel</button>
+              <button onClick={() => { saveOwner({ intro: introText }); setEditingIntro(false); }} disabled={saving} className="btn-primary text-xs py-1 px-3">{t('common.save')}</button>
+              <button onClick={() => setEditingIntro(false)} className="btn-secondary text-xs py-1 px-3">{t('common.cancel')}</button>
             </div>
           </div>
         </section>
@@ -146,13 +148,13 @@ export default function LeftSidebar() {
       {/* Featured / Daily Push */}
       <section className="sidebar-card">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-800">每日推送</h3>
+          <h3 className="text-sm font-semibold text-gray-800">{t('sidebar.dailyPush')}</h3>
           {isOwner && (
             <button
               onClick={() => setEditingCards(!editingCards)}
               className="text-xs text-gray-400 hover:text-blue-500"
             >
-              {editingCards ? 'Cancel' : 'Edit'}
+              {editingCards ? t('common.cancel') : t('common.edit')}
             </button>
           )}
         </div>
@@ -187,14 +189,14 @@ export default function LeftSidebar() {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-400 italic">No featured content</p>
+          <p className="text-xs text-gray-400 italic">{t('sidebar.noFeatured')}</p>
         )}
       </section>
 
       {/* Tags */}
       {tags.length > 0 && (
         <section className="sidebar-card">
-          <h3 className="text-sm font-semibold text-gray-800 mb-3">Tags</h3>
+          <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('sidebar.tags')}</h3>
           {tags.map((group, gi) => (
             <div key={gi} className="mb-3 last:mb-0">
               {group.category && (

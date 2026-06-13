@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { searchAPI } from '../services/api';
+import Pagination from '../components/Pagination';
+import { formatDateTime } from '../utils/dateFormat';
 
 export default function SearchPage() {
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const tagParam = searchParams.get('tag') || '';
@@ -60,22 +64,22 @@ export default function SearchPage() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search articles..."
+            placeholder={t('search.searchArticles')}
             className="input-field flex-1"
           />
           <input
             type="text"
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
-            placeholder="Tag (optional)"
+            placeholder={t('search.tagOptional')}
             className="input-field w-36"
           />
-          <button type="submit" className="btn-primary">Search</button>
+          <button type="submit" className="btn-primary">{t('search.search')}</button>
         </div>
         {tagParam && (
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>Tag: <span className="text-blue-600 font-medium">{tagParam}</span></span>
-            <button type="button" onClick={clearTag} className="text-red-400 hover:text-red-600 text-xs">&times; clear</button>
+            <span>{t('search.tagActive', { tag: tagParam })}</span>
+            <button type="button" onClick={clearTag} className="text-red-400 hover:text-red-600 text-xs">&times; {t('search.clearTag', { tag: tagParam })}</button>
           </div>
         )}
       </form>
@@ -83,16 +87,16 @@ export default function SearchPage() {
       {query && (
         <div className="mb-4">
           <h2 className="text-lg text-gray-600">
-            {total} result{total !== 1 ? 's' : ''} for &quot;{query}&quot;
+            {t('search.results', { total, query })}
           </h2>
         </div>
       )}
 
       {loading ? (
-        <div className="text-center py-8 text-gray-400">Searching...</div>
+        <div className="text-center py-8 text-gray-400">{t('search.searching')}</div>
       ) : results.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          {query ? 'No results found. Try a different keyword.' : 'Enter a keyword to search.'}
+          {query ? t('search.noResults') : t('search.enterKeyword')}
         </div>
       ) : (
         <div className="space-y-4">
@@ -113,11 +117,11 @@ export default function SearchPage() {
                   ) : null}
                   {item.author_name}
                 </Link>
-                <span>{new Date(item.created_at).toLocaleDateString('zh-CN')}</span>
-                {item.like_count > 0 && <span>{item.like_count} likes</span>}
-                {item.comment_count > 0 && <span>{item.comment_count} comments</span>}
+                <span>{formatDateTime(item.created_at, i18n.language)}</span>
+                {item.like_count > 0 && <span>{t('search.likes', { count: item.like_count })}</span>}
+                {item.comment_count > 0 && <span>{t('search.comments', { count: item.comment_count })}</span>}
                 {item.relevance > 0 && (
-                  <span className="text-blue-500">Relevance: {(item.relevance * 100).toFixed(0)}%</span>
+                  <span className="text-blue-500">{t('search.relevance', { pct: (item.relevance * 100).toFixed(0) })}</span>
                 )}
               </div>
               {item.tags?.length > 0 && (
@@ -134,17 +138,11 @@ export default function SearchPage() {
         </div>
       )}
 
-      {total > 20 && (
-        <div className="flex justify-center gap-3 mt-8">
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-secondary">
-            Previous
-          </button>
-          <span className="text-gray-500 self-center">Page {page} / {Math.ceil(total / 20)}</span>
-          <button onClick={() => setPage((p) => p + 1)} disabled={page >= Math.ceil(total / 20)} className="btn-secondary">
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        page={page}
+        totalPages={Math.ceil(total / 20)}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

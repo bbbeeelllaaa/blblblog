@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api, { getErrorDetail } from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -14,9 +16,9 @@ export default function ForgotPasswordPage() {
     try {
       await api.post('/auth/forgot-password', { email });
       setSent(true);
-      toast.success('Reset link sent!');
+      toast.success(t('auth.resetLinkSentToast'));
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to send reset link'));
+      toast.error(getErrorDetail(err, t('auth.failedToSendReset')));
     } finally {
       setLoading(false);
     }
@@ -26,13 +28,13 @@ export default function ForgotPasswordPage() {
     return (
       <div className="max-w-md mx-auto mt-12">
         <div className="card text-center">
-          <h1 className="text-2xl font-bold mb-4">Check Your Email</h1>
+          <h1 className="text-2xl font-bold mb-4">{t('auth.checkEmail')}</h1>
           <p className="text-gray-600 text-sm mb-4">
-            If <strong>{email}</strong> is registered, we've sent a password reset link.
-            The link expires in 30 minutes.
+            {t('auth.resetLinkSent', { email })}
+            {' '}{t('auth.linkExpires')}
           </p>
           <Link to="/login" className="text-blue-600 hover:underline text-sm">
-            Back to Login
+            {t('auth.backToLogin')}
           </Link>
         </div>
       </div>
@@ -42,13 +44,13 @@ export default function ForgotPasswordPage() {
   return (
     <div className="max-w-md mx-auto mt-12">
       <div className="card">
-        <h1 className="text-2xl font-bold text-center mb-2">Forgot Password</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">{t('auth.forgotPasswordTitle')}</h1>
         <p className="text-gray-500 text-sm text-center mb-6">
-          Enter your email and we'll send you a reset link.
+          {t('auth.forgotPasswordDesc')}
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.email')}</label>
             <input
               type="email"
               value={email}
@@ -59,11 +61,11 @@ export default function ForgotPasswordPage() {
             />
           </div>
           <button type="submit" className="btn-primary w-full" disabled={loading}>
-            {loading ? 'Sending...' : 'Send Reset Link'}
+            {loading ? t('auth.sending') : t('auth.sendResetLink')}
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
-          <Link to="/login" className="text-blue-600 hover:underline">Back to Login</Link>
+          <Link to="/login" className="text-blue-600 hover:underline">{t('auth.backToLogin')}</Link>
         </p>
       </div>
     </div>

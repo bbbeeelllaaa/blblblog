@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api, { getErrorDetail } from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const navigate = useNavigate();
@@ -15,12 +17,12 @@ export default function ResetPasswordPage() {
     return (
       <div className="max-w-md mx-auto mt-12">
         <div className="card text-center">
-          <h1 className="text-2xl font-bold mb-4">Invalid Link</h1>
+          <h1 className="text-2xl font-bold mb-4">{t('auth.invalidLink')}</h1>
           <p className="text-gray-500 text-sm mb-4">
-            This password reset link is missing a token. Please use the link from your email.
+            {t('auth.invalidLinkDesc')}
           </p>
           <Link to="/login" className="text-blue-600 hover:underline text-sm">
-            Back to Login
+            {t('auth.backToLogin')}
           </Link>
         </div>
       </div>
@@ -30,20 +32,20 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirm) {
-      toast.error('Passwords do not match');
+      toast.error(t('auth.passwordsDontMatch'));
       return;
     }
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error(t('auth.passwordTooShort'));
       return;
     }
     setLoading(true);
     try {
       await api.post('/auth/reset-password', { token, password });
-      toast.success('Password reset! Please login.');
+      toast.success(t('auth.passwordResetSuccess'));
       navigate('/login');
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to reset password'));
+      toast.error(getErrorDetail(err, t('auth.failedToReset')));
     } finally {
       setLoading(false);
     }
@@ -52,10 +54,10 @@ export default function ResetPasswordPage() {
   return (
     <div className="max-w-md mx-auto mt-12">
       <div className="card">
-        <h1 className="text-2xl font-bold text-center mb-6">Set New Password</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">{t('auth.setNewPassword')}</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.newPassword')}</label>
             <input
               type="password"
               value={password}
@@ -67,7 +69,7 @@ export default function ResetPasswordPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.confirmPassword')}</label>
             <input
               type="password"
               value={confirm}
@@ -79,11 +81,11 @@ export default function ResetPasswordPage() {
             />
           </div>
           <button type="submit" className="btn-primary w-full" disabled={loading}>
-            {loading ? 'Resetting...' : 'Reset Password'}
+            {loading ? t('auth.resetting') : t('auth.resetPassword')}
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
-          <Link to="/login" className="text-blue-600 hover:underline">Back to Login</Link>
+          <Link to="/login" className="text-blue-600 hover:underline">{t('auth.backToLogin')}</Link>
         </p>
       </div>
     </div>

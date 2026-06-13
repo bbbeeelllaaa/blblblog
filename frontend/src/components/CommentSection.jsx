@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api, { commentAPI, likeAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
+import { formatDateTime } from '../utils/dateFormat';
+import Pagination from './Pagination';
 import toast from 'react-hot-toast';
 
 export default function CommentSection({ articleId, refreshTrigger }) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [comments, setComments] = useState([]);
@@ -29,7 +33,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
       });
       setImageUrl(res.data.url);
     } catch {
-      toast.error('Image upload failed');
+      toast.error(t('comment.imageUploadFailed'));
     } finally {
       setUploading(false);
     }
@@ -55,7 +59,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      toast.error('Please login first');
+      toast.error(t('comment.pleaseLogin'));
       navigate('/login');
       return;
     }
@@ -69,10 +73,10 @@ export default function CommentSection({ articleId, refreshTrigger }) {
       setContent('');
       setImageUrl('');
       setReplyTo(null);
-      toast.success('Comment posted');
+      toast.success(t('comment.posted'));
       loadComments();
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to post comment'));
+      toast.error(getErrorDetail(err, t('comment.failedToPost')));
     }
   };
 
@@ -85,7 +89,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
       await likeAPI.toggleComment(commentId);
       loadComments();
     } catch {
-      toast.error('Failed');
+      toast.error(t('comment.failed'));
     }
   };
 
@@ -105,12 +109,12 @@ export default function CommentSection({ articleId, refreshTrigger }) {
           <div className="flex items-center gap-2 mb-1">
             <Link to={`/users/${comment.user_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600">{comment.username}</Link>
             <span className="text-xs text-gray-400">
-              {new Date(comment.created_at).toLocaleString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              {formatDateTime(comment.created_at, i18n.language)}
             </span>
           </div>
           <p className="text-gray-700 text-sm whitespace-pre-wrap break-words">{comment.content}</p>
           {comment.image_url && (
-            <img src={comment.image_url} alt="Comment image" className="mt-2 max-w-xs rounded-lg object-cover max-h-48" />
+            <img src={comment.image_url} alt={t('comment.commentImage')} className="mt-2 max-w-xs rounded-lg object-cover max-h-48" />
           )}
           <div className="flex items-center gap-4 mt-2">
             <button
@@ -127,7 +131,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
                 onClick={() => setReplyTo(replyTo?.id === comment.id ? null : comment)}
                 className="text-xs text-gray-400 hover:text-blue-500"
               >
-                Reply
+                {t('comment.reply')}
               </button>
             )}
           </div>
@@ -137,13 +141,13 @@ export default function CommentSection({ articleId, refreshTrigger }) {
                 type="text"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder={`Reply to ${comment.username}...`}
+                placeholder={t('comment.replyTo', { username: comment.username })}
                 className="input-field text-sm flex-1"
                 autoFocus
               />
-              <button type="submit" className="btn-primary text-xs px-3">Reply</button>
+              <button type="submit" className="btn-primary text-xs px-3">{t('comment.reply')}</button>
               <button type="button" onClick={() => { setReplyTo(null); setContent(''); }} className="btn-secondary text-xs px-3">
-                Cancel
+                {t('common.cancel')}
               </button>
             </form>
           )}
@@ -155,22 +159,22 @@ export default function CommentSection({ articleId, refreshTrigger }) {
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg font-semibold mb-4">Comments ({total})</h3>
+      <h3 className="text-lg font-semibold mb-4">{t('comment.comments', { total })}</h3>
 
       {/* Sort selector */}
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs text-gray-400">Sort by:</span>
+        <span className="text-xs text-gray-400">{t('comment.sortBy')}</span>
         <button
           onClick={() => { setSort('newest'); setPage(1); }}
           className={`text-xs px-3 py-1 rounded-full transition-colors ${sort === 'newest' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
         >
-          Newest
+          {t('comment.newest')}
         </button>
         <button
           onClick={() => { setSort('most_liked'); setPage(1); }}
           className={`text-xs px-3 py-1 rounded-full transition-colors ${sort === 'most_liked' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
         >
-          Most Liked
+          {t('comment.mostLiked')}
         </button>
       </div>
 
@@ -180,17 +184,17 @@ export default function CommentSection({ articleId, refreshTrigger }) {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder={user ? "Write a comment..." : "Login to comment"}
+            placeholder={user ? t('comment.writeComment') : t('comment.loginToComment')}
             rows={3}
             className="input-field resize-none"
           />
           <div className="flex items-center gap-2 mt-2">
             <button type="submit" className="btn-primary text-sm" disabled={!content.trim()}>
-              Post Comment
+              {t('comment.postComment')}
             </button>
             <label className="cursor-pointer text-sm text-gray-400 hover:text-gray-600">
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-              {uploading ? 'Uploading...' : 'Image'}
+              {uploading ? t('comment.uploading') : t('comment.image')}
             </label>
           </div>
           {imageUrl && (
@@ -203,34 +207,14 @@ export default function CommentSection({ articleId, refreshTrigger }) {
       )}
 
       {loading ? (
-        <div className="text-center py-8 text-gray-400">Loading comments...</div>
+        <div className="text-center py-8 text-gray-400">{t('comment.loading')}</div>
       ) : comments.length === 0 ? (
-        <div className="text-center py-8 text-gray-400">No comments yet. Be the first!</div>
+        <div className="text-center py-8 text-gray-400">{t('comment.noComments')}</div>
       ) : (
         <div>{comments.map((c) => renderComment(c))}</div>
       )}
 
-      {total > 20 && (
-        <div className="flex justify-center gap-2 mt-4">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="btn-secondary text-sm"
-          >
-            Prev
-          </button>
-          <span className="text-sm text-gray-500 self-center">
-            Page {page} / {Math.ceil(total / 20)}
-          </span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page >= Math.ceil(total / 20)}
-            className="btn-secondary text-sm"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={Math.ceil(total / 20)} onPageChange={setPage} />
     </div>
   );
 }

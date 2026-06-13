@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { articleAPI } from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import Pagination from '../components/Pagination';
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [articles, setArticles] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -10,6 +13,8 @@ export default function HomePage() {
 
   const params = new URLSearchParams(window.location.search);
   const tag = params.get('tag');
+
+  const totalPages = Math.ceil(total / 20);
 
   const loadArticles = async () => {
     setLoading(true);
@@ -30,10 +35,10 @@ export default function HomePage() {
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          {tag ? `Tag: ${tag}` : 'Latest Articles'}
+          {tag ? t('article.tagFilter', { tag }) : t('article.latestArticles')}
         </h1>
         <p className="text-gray-500 mt-1">
-          {total} article{total !== 1 ? 's' : ''} published
+          {total} {t('article.published')}
         </p>
       </div>
 
@@ -49,8 +54,8 @@ export default function HomePage() {
         </div>
       ) : articles.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-400 text-lg">No articles yet.</p>
-          <p className="text-gray-400 text-sm mt-1">Be the first to write one!</p>
+          <p className="text-gray-400 text-lg">{t('article.noArticles')}</p>
+          <p className="text-gray-400 text-sm mt-1">{t('article.beFirst')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -60,27 +65,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {total > 20 && (
-        <div className="flex justify-center gap-3 mt-8">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="btn-secondary"
-          >
-            Previous
-          </button>
-          <span className="text-gray-500 self-center">
-            Page {page} / {Math.ceil(total / 20)}
-          </span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page >= Math.ceil(total / 20)}
-            className="btn-secondary"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

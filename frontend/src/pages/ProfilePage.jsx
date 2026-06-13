@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 import { getErrorDetail } from '../services/api';
@@ -8,6 +9,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp'];
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, updateProfile, uploadAvatar } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -35,9 +37,9 @@ export default function ProfilePage() {
     setSaving(true);
     try {
       await updateProfile(form);
-      toast.success('Profile updated!');
+      toast.success(t('profile.profileUpdated'));
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to update'));
+      toast.error(getErrorDetail(err, t('profile.failedToUpdate')));
     } finally {
       setSaving(false);
     }
@@ -47,21 +49,21 @@ export default function ProfilePage() {
     if (!file) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error('Only PNG, JPEG, GIF, WebP, BMP images are allowed');
+      toast.error(t('profile.imageTypeError'));
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      toast.error(`File too large (max ${MAX_FILE_SIZE / 1024 / 1024}MB)`);
+      toast.error(t('profile.fileTooLarge', { size: MAX_FILE_SIZE / 1024 / 1024 }));
       return;
     }
 
     setAvatarUploading(true);
     try {
       await uploadAvatar(file);
-      toast.success('Avatar updated!');
+      toast.success(t('profile.avatarUpdated'));
     } catch (err) {
-      toast.error(getErrorDetail(err, 'Failed to upload avatar'));
+      toast.error(getErrorDetail(err, t('profile.failedToUploadAvatar')));
     } finally {
       setAvatarUploading(false);
     }
@@ -89,7 +91,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('profile.myProfile')}</h1>
 
       <div className="card mb-6">
         <div className="flex items-center gap-6 mb-6">
@@ -111,7 +113,7 @@ export default function ProfilePage() {
               onClick={() => fileInputRef.current?.click()}
               disabled={avatarUploading}
               className="absolute bottom-0 right-0 w-7 h-7 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-700 disabled:opacity-50"
-              title="Upload avatar"
+              title={t('profile.uploadAvatar')}
             >
               {avatarUploading ? (
                 <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -136,32 +138,32 @@ export default function ProfilePage() {
           <div>
             <div className="text-lg font-medium">{user.username}</div>
             <div className="text-sm text-gray-500">{user.email}</div>
-            {dragOver && <div className="text-xs text-blue-500 mt-1">Drop image here</div>}
+            {dragOver && <div className="text-xs text-blue-500 mt-1">{t('profile.dropImage')}</div>}
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('profile.username')}</label>
             <input name="username" value={form.username} onChange={handleChange} className="input-field" minLength={3} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('profile.bio')}</label>
             <textarea name="bio" value={form.bio} onChange={handleChange} rows={3}
-              className="input-field resize-none" placeholder="Tell us about yourself..." />
+              className="input-field resize-none" placeholder={t('profile.bioPlaceholder')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Interests</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('profile.interests')}</label>
             <textarea name="interests" value={form.interests} onChange={handleChange} rows={3}
-              className="input-field resize-none" placeholder="e.g. Python&#10;React&#10;Machine Learning" />
+              className="input-field resize-none" placeholder={t('profile.interestsPlaceholder')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('profile.experience')}</label>
             <textarea name="experience" value={form.experience} onChange={handleChange} rows={3}
-              className="input-field resize-none" placeholder="Your work experience..." />
+              className="input-field resize-none" placeholder={t('profile.experiencePlaceholder')} />
           </div>
           <button type="submit" className="btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Profile'}
+            {saving ? t('profile.saving') : t('profile.saveProfile')}
           </button>
         </form>
       </div>
