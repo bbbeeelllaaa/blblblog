@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import { siteAPI, getErrorDetail } from '../services/api';
 import { parseJsonArray } from '../utils/json';
 import FeaturedCardsEditor from './FeaturedCardsEditor';
+import Avatar from './Avatar';
 import toast from 'react-hot-toast';
 
 export default function LeftSidebar() {
@@ -86,13 +87,7 @@ export default function LeftSidebar() {
       {/* Owner info */}
       <section>
         <Link to={`/users/${owner.id}`} className="flex items-center gap-3 mb-2">
-          {owner.avatar ? (
-            <img src={owner.avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-brand flex items-center justify-center text-white text-lg font-medium">
-              {owner.username?.[0]?.toUpperCase()}
-            </div>
-          )}
+          <Avatar src={owner.avatar} letter={owner.username?.[0]?.toUpperCase()} size="w-12 h-12" />
           <div>
             <div className="font-semibold text-gray-900">{owner.username}</div>
             {!editingBio && (

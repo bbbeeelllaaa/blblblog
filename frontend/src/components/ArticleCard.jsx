@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import Avatar from './Avatar';
 
 // Left accent border colors cycling through the morandi palette
 const ACCENTS = ['border-l-brand', 'border-l-warm', 'border-l-rose', 'border-l-brand-light'];
@@ -24,13 +25,7 @@ export default function ArticleCard({ article, index = 0, hero = false }) {
 
         <div className="flex items-center gap-3 mb-4">
           <Link to={`/users/${article.author_id}`} className="flex items-center gap-2 hover:opacity-80">
-            {article.author_avatar ? (
-              <img src={article.author_avatar} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-white" />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white text-sm font-medium ring-2 ring-white">
-                {article.author_name?.[0]?.toUpperCase()}
-              </div>
-            )}
+            <Avatar src={article.author_avatar} letter={article.author_name?.[0]?.toUpperCase()} size="w-10 h-10" ring="ring-2 ring-white" />
             <div>
               <span className="text-sm font-medium text-gray-800">{article.author_name}</span>
               <span className="text-xs text-gray-500 ml-2">{date}</span>
@@ -90,13 +85,7 @@ export default function ArticleCard({ article, index = 0, hero = false }) {
     <article className={`${bg} rounded-xl shadow-sm border border-brand-light/20 border-l-[3px] ${accent} p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
       <div className="flex items-center gap-3 mb-3">
         <Link to={`/users/${article.author_id}`} className="flex items-center gap-2 hover:opacity-80 shrink-0">
-          {article.author_avatar ? (
-            <img src={article.author_avatar} alt="" className="w-7 h-7 rounded-full object-cover ring-1 ring-white" />
-          ) : (
-            <div className="w-7 h-7 rounded-full bg-brand flex items-center justify-center text-white text-xs font-medium ring-1 ring-white">
-              {article.author_name?.[0]?.toUpperCase()}
-            </div>
-          )}
+          <Avatar src={article.author_avatar} letter={article.author_name?.[0]?.toUpperCase()} size="w-7 h-7" ring="ring-1 ring-white" />
           <span className="text-sm text-gray-700">{article.author_name}</span>
         </Link>
         <span className="text-xs text-gray-500 ml-auto">{date}</span>

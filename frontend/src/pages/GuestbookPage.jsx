@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import { formatDateTime } from '../utils/dateFormat';
 import Pagination from '../components/Pagination';
 import ConfirmModal from '../components/ConfirmModal';
+import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 
 const CARD_ACCENTS = ['border-l-brand', 'border-l-warm', 'border-l-rose', 'border-l-brand-light'];
@@ -199,13 +200,7 @@ export default function GuestbookPage() {
             >
               <div className="flex items-start gap-3">
                 <Link to={`/users/${msg.user_id}`} className="shrink-0">
-                  {msg.user_avatar ? (
-                    <img src={msg.user_avatar} alt="" className="w-9 h-9 rounded-full object-cover ring-1 ring-white" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-brand flex items-center justify-center text-white text-sm font-medium ring-1 ring-white">
-                      {msg.username?.[0]?.toUpperCase()}
-                    </div>
-                  )}
+                  <Avatar src={msg.user_avatar} letter={msg.username?.[0]?.toUpperCase()} size="w-9 h-9" ring="ring-1 ring-white" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">

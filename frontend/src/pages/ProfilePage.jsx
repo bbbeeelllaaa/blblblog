@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
+import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 import { getErrorDetail } from '../services/api';
 
@@ -101,13 +102,7 @@ export default function ProfilePage() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            {user.avatar ? (
-              <img src={user.avatar} alt="" className="w-20 h-20 rounded-full object-cover" />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-brand flex items-center justify-center text-white text-2xl font-medium">
-                {user.username?.[0]?.toUpperCase()}
-              </div>
-            )}
+            <Avatar src={user.avatar} letter={user.username?.[0]?.toUpperCase()} size="w-20 h-20" />
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}

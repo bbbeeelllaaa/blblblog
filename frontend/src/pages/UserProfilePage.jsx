@@ -5,6 +5,7 @@ import { userAPI, articleAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import ArticleCard from '../components/ArticleCard';
 import Pagination from '../components/Pagination';
+import Avatar from '../components/Avatar';
 import { formatDate, formatDateTime } from '../utils/dateFormat';
 import toast from 'react-hot-toast';
 
@@ -73,13 +74,7 @@ export default function UserProfilePage() {
     <div className="max-w-3xl mx-auto">
       <div className="card-brand mb-8">
         <div className="flex items-center gap-6">
-          {profile?.avatar ? (
-            <img src={profile.avatar} alt="" className="w-24 h-24 rounded-full object-cover" />
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-brand flex items-center justify-center text-white text-3xl font-medium">
-              {profile?.username?.[0]?.toUpperCase()}
-            </div>
-          )}
+          <Avatar src={profile?.avatar} letter={profile?.username?.[0]?.toUpperCase()} size="w-24 h-24" />
           <div>
             <h1 className="text-2xl font-bold">{profile?.username}</h1>
             <p className="text-sm text-gray-500 mt-1">

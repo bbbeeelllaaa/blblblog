@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { searchAPI } from '../services/api';
 import Pagination from '../components/Pagination';
+import Avatar from '../components/Avatar';
 import { formatDateTime } from '../utils/dateFormat';
 
 export default function SearchPage() {
@@ -116,9 +117,7 @@ export default function SearchPage() {
               )}
               <div className="flex items-center gap-3 text-xs text-gray-500">
                 <Link to={`/users/${item.author_id}`} className="flex items-center gap-1 hover:text-brand">
-                  {item.author_avatar ? (
-                    <img src={item.author_avatar} alt="" className="w-4 h-4 rounded-full object-cover" />
-                  ) : null}
+                  <Avatar src={item.author_avatar} letter={item.author_name?.[0]?.toUpperCase()} size="w-4 h-4" />
                   {item.author_name}
                 </Link>
                 <span>{formatDateTime(item.created_at, i18n.language)}</span>

@@ -6,6 +6,7 @@ import { articleAPI, likeAPI, favoriteAPI, statsAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { formatDateTime } from '../utils/dateFormat';
 import CommentSection from '../components/CommentSection';
+import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 
 export default function ArticleDetailPage() {
@@ -122,13 +123,7 @@ export default function ArticleDetailPage() {
       {/* Author & Meta */}
       <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
         <Link to={`/users/${article.author_id}`} className="flex items-center gap-2">
-          {article.author_avatar ? (
-            <img src={article.author_avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white font-medium">
-              {article.author_name?.[0]?.toUpperCase()}
-            </div>
-          )}
+          <Avatar src={article.author_avatar} letter={article.author_name?.[0]?.toUpperCase()} size="w-10 h-10" />
           <div>
             <div className="text-sm font-medium text-gray-900">{article.author_name}</div>
             <div className="text-xs text-gray-500">

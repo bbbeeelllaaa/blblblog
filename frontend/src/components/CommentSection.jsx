@@ -5,6 +5,7 @@ import api, { commentAPI, likeAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { formatDateTime } from '../utils/dateFormat';
 import Pagination from './Pagination';
+import Avatar from './Avatar';
 import toast from 'react-hot-toast';
 
 export default function CommentSection({ articleId, refreshTrigger }) {
@@ -96,15 +97,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
   const renderComment = (comment, isReply = false) => (
     <div key={comment.id} className={`${isReply ? 'ml-8 mt-2 bg-brand-light/15 rounded-lg p-3 border border-brand-light/30' : 'border-b border-gray-100 py-4'}`}>
       <div className="flex items-start gap-3">
-        <Link to={`/users/${comment.user_id}`}>
-          {comment.user_avatar ? (
-            <img src={comment.user_avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white text-xs font-medium shrink-0">
-              {comment.username?.[0]?.toUpperCase()}
-            </div>
-          )}
-        </Link>
+        <Avatar src={comment.user_avatar} letter={comment.username?.[0]?.toUpperCase()} size="w-8 h-8" linkTo={`/users/${comment.user_id}`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <Link to={`/users/${comment.user_id}`} className="text-sm font-medium text-gray-900 hover:text-brand">{comment.username}</Link>

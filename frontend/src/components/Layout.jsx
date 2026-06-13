@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LeftSidebar from './LeftSidebar';
+import Avatar from './Avatar';
 import toast from 'react-hot-toast';
 
 const scrollCache = {};
@@ -108,13 +109,7 @@ export default function Layout() {
                   <Link to="/favorites" className="text-gray-600 hover:text-brand text-sm">{t('nav.favorites')}</Link>
                   {user.is_admin && <Link to="/admin" className="text-brand hover:text-brand-hover text-sm font-medium">{t('nav.admin')}</Link>}
                   <Link to="/profile" className="flex items-center gap-2 text-gray-600 hover:text-brand text-sm">
-                    {user.avatar ? (
-                      <img src={user.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-brand flex items-center justify-center text-white text-xs font-medium">
-                        {user.username?.[0]?.toUpperCase()}
-                      </div>
-                    )}
+                    <Avatar src={user.avatar} letter={user.username?.[0]?.toUpperCase()} size="w-7 h-7" />
                     {user.username}
                   </Link>
                   <button onClick={handleLogout} className="text-gray-500 hover:text-rose text-sm">
