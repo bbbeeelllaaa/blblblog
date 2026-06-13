@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "http://47.99.50.109/api/$1" },
+    { "source": "/uploads/(.*)", "destination": "http://47.99.50.109/uploads/$1" },
+    { "source": "/((?!api|uploads).*)", "destination": "/index.html" }
+  ]
+}
