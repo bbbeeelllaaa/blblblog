@@ -101,6 +101,7 @@ export default function Layout() {
 
             <div className="hidden md:flex items-center gap-3">
               <Link to="/" className="text-gray-600 hover:text-brand text-sm">{t('nav.home')}</Link>
+              <Link to="/guestbook" className="text-gray-600 hover:text-brand text-sm">{t('nav.guestbook')}</Link>
               {user ? (
                 <>
                   <Link to="/articles/new" className="btn-primary text-sm">{t('nav.write')}</Link>
@@ -166,6 +167,7 @@ export default function Layout() {
               </form>
               <div className="flex flex-col gap-2">
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.home')}</Link>
+                <Link to="/guestbook" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.guestbook')}</Link>
                 {user ? (
                   <>
                     <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-brand py-2">{t('nav.writeArticle')}</Link>
@@ -261,7 +263,7 @@ export default function Layout() {
 
       {/* Footer - only on home page */}
       {isHomePage && (
-        <footer className="bg-white border-t border-gray-100 py-6">
+        <footer className="bg-brand-light/20 border-t border-brand-light/40 py-6">
           <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
             {t('footer.text', { year: new Date().getFullYear() })}
           </div>

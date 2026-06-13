@@ -5,6 +5,37 @@
 @layer base {
   body {
     @apply min-h-screen;
+    /* Airy, dynamic gradient */
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 30%, #F2F0F8 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 80% 70%, #ECF0F6 0%, transparent 70%),
+      linear-gradient(160deg, #F5F3F8 0%, #F0F2F6 30%, #F3F2F7 55%, #F1F1F6 100%);
+    background-size: 180% 180%;
+    background-position: 0% 0%;
+    background-attachment: fixed;
+    animation: bgFloat 20s ease-in-out infinite alternate;
+  }
+
+  /* Background image overlay — low opacity, fixed behind everything */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: url('/bg.jpg') center / cover no-repeat;
+    opacity: 0.18;
+  }
+
+  @keyframes bgFloat {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 40%;
+    }
+    100% {
+      background-position: 30% 100%;
+    }
   }
 }
 
@@ -22,11 +53,45 @@
     @apply w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all;
   }
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+    @apply bg-white rounded-xl shadow-sm border border-brand-light/30 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
+  }
+  .card-warm {
+    @apply bg-warm/20 rounded-xl shadow-sm border border-warm/30 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
+  }
+  .card-rose {
+    @apply bg-rose/10 rounded-xl shadow-sm border border-rose/25 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
+  }
+  .card-brand {
+    @apply bg-brand-light/35 rounded-xl shadow-sm border border-brand/30 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
   }
   .sidebar-card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-4;
+    @apply bg-warm/15 rounded-xl shadow-sm border border-warm/30 p-4;
   }
+}
+
+/* Sidebar About section — Song/Ming typeface */
+.sidebar-about-content .wmde-markdown {
+  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'Source Han Serif SC', serif !important;
+  font-size: 0.875rem;
+  line-height: 1.85;
+  color: #374151;
+}
+
+.sidebar-about-content .wmde-markdown p,
+.sidebar-about-content .wmde-markdown li,
+.sidebar-about-content .wmde-markdown span {
+  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'Source Han Serif SC', serif !important;
+  color: #374151;
+}
+
+.sidebar-about-content .wmde-markdown h1,
+.sidebar-about-content .wmde-markdown h2,
+.sidebar-about-content .wmde-markdown h3,
+.sidebar-about-content .wmde-markdown h4,
+.sidebar-about-content .wmde-markdown h5,
+.sidebar-about-content .wmde-markdown h6 {
+  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'Source Han Serif SC', serif !important;
+  font-weight: 700;
 }
 
 /* Markdown rendered content */
@@ -34,7 +99,7 @@
   font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   font-size: 0.875rem;
   line-height: 1.75;
-  color: #374151;
+  color: #1f2937;
   background: transparent !important;
 }
 

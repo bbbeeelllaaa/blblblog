@@ -100,17 +100,21 @@ export default function SearchPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {results.map((item) => (
-            <div key={item.id} className="card hover:shadow-md transition-shadow">
+          {results.map((item, i) => {
+            const accents = ['border-l-brand', 'border-l-warm', 'border-l-rose', 'border-l-brand-light'];
+            const bgs = ['bg-white', 'bg-brand-light/35', 'bg-warm/20'];
+            const cardStyle = `${bgs[i % 3]} rounded-xl shadow-sm border border-brand-light/20 border-l-[3px] ${accents[i % 4]} p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`;
+            return (
+            <div key={item.id} className={cardStyle}>
               <Link to={`/articles/${item.id}`}>
                 <h3 className="text-lg font-semibold text-gray-900 hover:text-brand mb-1">
                   {item.title}
                 </h3>
               </Link>
               {item.summary && (
-                <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.summary}</p>
+                <p className="text-sm text-gray-700 line-clamp-2 mb-2">{item.summary}</p>
               )}
-              <div className="flex items-center gap-3 text-xs text-gray-400">
+              <div className="flex items-center gap-3 text-xs text-gray-500">
                 <Link to={`/users/${item.author_id}`} className="flex items-center gap-1 hover:text-brand">
                   {item.author_avatar ? (
                     <img src={item.author_avatar} alt="" className="w-4 h-4 rounded-full object-cover" />
@@ -134,7 +138,8 @@ export default function SearchPage() {
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

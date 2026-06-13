@@ -93,7 +93,7 @@ export default function ProfilePage() {
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">{t('profile.myProfile')}</h1>
 
-      <div className="card mb-6">
+      <div className="card-brand mb-6">
         <div className="flex items-center gap-6 mb-6">
           <div
             className={`relative ${dragOver ? 'ring-2 ring-brand rounded-full' : ''}`}

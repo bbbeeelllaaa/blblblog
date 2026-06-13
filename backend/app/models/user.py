@@ -29,3 +29,4 @@ class User(Base):
     articles = relationship("Article", back_populates="author", lazy="selectin")
     comments = relationship("Comment", back_populates="user", lazy="selectin")
     favorites = relationship("Favorite", back_populates="user", lazy="selectin")
+    guestbook_messages = relationship("GuestbookMessage", back_populates="user", lazy="selectin")

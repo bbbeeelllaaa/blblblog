@@ -90,7 +90,7 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
       {cards.map((card, index) => (
         <div
           key={index}
-          className="rounded-lg border border-gray-200 bg-gray-50 p-3 relative group"
+          className="rounded-lg border border-warm/25 bg-warm/10 p-3 relative group"
         >
           {/* Card header with order buttons and remove */}
           <div className="flex items-center justify-between mb-2">
@@ -211,7 +211,7 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
 
           {/* Live preview */}
           {(card.image || card.title || card.description) && (
-            <div className="mt-2 rounded overflow-hidden border border-gray-200 bg-white">
+            <div className="mt-2 rounded overflow-hidden border border-brand-light/50 bg-brand-light/20">
               {card.image && (
                 <img
                   src={card.image}

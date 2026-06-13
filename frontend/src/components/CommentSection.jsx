@@ -94,7 +94,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
   };
 
   const renderComment = (comment, isReply = false) => (
-    <div key={comment.id} className={`${isReply ? 'ml-8 mt-2' : 'border-b border-gray-100 py-4'}`}>
+    <div key={comment.id} className={`${isReply ? 'ml-8 mt-2 bg-brand-light/15 rounded-lg p-3 border border-brand-light/30' : 'border-b border-gray-100 py-4'}`}>
       <div className="flex items-start gap-3">
         <Link to={`/users/${comment.user_id}`}>
           {comment.user_avatar ? (
@@ -180,7 +180,7 @@ export default function CommentSection({ articleId, refreshTrigger }) {
 
       {/* New comment form */}
       {!replyTo && (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mb-6 bg-warm/10 rounded-xl p-4 border border-warm/20">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}

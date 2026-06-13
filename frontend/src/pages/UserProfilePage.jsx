@@ -71,7 +71,7 @@ export default function UserProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="card mb-8">
+      <div className="card-brand mb-8">
         <div className="flex items-center gap-6">
           {profile?.avatar ? (
             <img src={profile.avatar} alt="" className="w-24 h-24 rounded-full object-cover" />
@@ -111,7 +111,7 @@ export default function UserProfilePage() {
           </h2>
           <div className="space-y-3">
             {drafts.map((draft) => (
-              <div key={draft.id} className="card border-dashed border-warm/20 bg-warm/10/50">
+              <div key={draft.id} className="rounded-xl shadow-sm border-dashed border-warm/30 bg-warm/15 p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-gray-900 truncate">{draft.title}</h3>
@@ -147,7 +147,7 @@ export default function UserProfilePage() {
         <div className="text-center py-8 text-gray-400">{t('article.noArticlesUser')}</div>
       ) : (
         <div className="space-y-4">
-          {articles.map((a) => <ArticleCard key={a.id} article={a} />)}
+          {articles.map((a, i) => <ArticleCard key={a.id} article={a} index={i} />)}
         </div>
       )}
     </div>

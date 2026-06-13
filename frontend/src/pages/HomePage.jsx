@@ -44,11 +44,18 @@ export default function HomePage() {
 
       {loading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
+          <div className="card animate-pulse !p-8">
+            <div className="h-3 bg-gray-300/50 rounded-full w-16 mb-5" />
+            <div className="h-4 bg-gray-300/50 rounded w-1/4 mb-4" />
+            <div className="h-7 bg-gray-300/50 rounded w-3/4 mb-3" />
+            <div className="h-4 bg-gray-300/50 rounded w-full mb-2" />
+            <div className="h-4 bg-gray-300/50 rounded w-2/3" />
+          </div>
+          {[1, 2].map((i) => (
             <div key={i} className="card animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
-              <div className="h-6 bg-gray-200 rounded w-2/3 mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-full" />
+              <div className="h-4 bg-gray-300/50 rounded w-1/3 mb-3" />
+              <div className="h-5 bg-gray-300/50 rounded w-2/3 mb-2" />
+              <div className="h-4 bg-gray-300/50 rounded w-full" />
             </div>
           ))}
         </div>
@@ -58,9 +65,9 @@ export default function HomePage() {
           <p className="text-gray-400 text-sm mt-1">{t('article.beFirst')}</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
+        <div className="space-y-5">
+          {articles.map((article, i) => (
+            <ArticleCard key={article.id} article={article} index={i} hero={i === 0} />
           ))}
         </div>
       )}

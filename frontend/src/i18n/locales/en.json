@@ -18,6 +18,7 @@
     "home": "Home",
     "write": "Write",
     "favorites": "Favorites",
+    "guestbook": "Guestbook",
     "admin": "Admin",
     "profile": "Profile",
     "login": "Login",
@@ -240,6 +241,29 @@
     "confirmDeleteComment": "Delete this comment?",
     "commentDeleted": "Comment deleted",
     "failedToLoadComments": "Failed to load comments"
+  },
+  "guestbook": {
+    "title": "Guestbook",
+    "description": "{{total}} messages",
+    "leaveMessage": "Leave a message",
+    "writePlaceholder": "Say something...",
+    "loginToPost": "Please login to post a message",
+    "postMessage": "Post Message",
+    "posting": "Posting...",
+    "posted": "Message posted!",
+    "failedToPost": "Failed to post message",
+    "addImage": "Add image",
+    "uploadingImage": "Uploading...",
+    "imageTypeError": "Only image files are allowed",
+    "fileTooLarge": "File too large (max 5MB)",
+    "uploadFailed": "Image upload failed",
+    "messageImage": "Message image",
+    "delete": "Delete message",
+    "confirmDelete": "Delete this message?",
+    "deleted": "Message deleted",
+    "noMessages": "No messages yet",
+    "beFirst": "Be the first to leave a message!",
+    "pleaseLogin": "Please login first"
   },
   "footer": {
     "text": "© {{year}} blblblog. Built with FastAPI & React."

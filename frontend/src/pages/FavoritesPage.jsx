@@ -48,9 +48,10 @@ export default function FavoritesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {favorites.map((fav) => (
+          {favorites.map((fav, i) => (
             <ArticleCard
               key={fav.id}
+              index={i}
               article={{
                 id: fav.article_id,
                 title: fav.article_title,

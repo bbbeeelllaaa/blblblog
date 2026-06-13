@@ -123,4 +123,11 @@ export const siteAPI = {
   updateOwner: (data) => api.put('/site/owner', data),
 };
 
+// Guestbook
+export const guestbookAPI = {
+  list: (params) => api.get('/guestbook', { params }),
+  create: (data) => api.post('/guestbook', data),
+  delete: (id) => api.delete(`/guestbook/${id}`),
+};
+
 export default api;

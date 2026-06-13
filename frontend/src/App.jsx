@@ -14,6 +14,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdminPage from './pages/AdminPage';
+import GuestbookPage from './pages/GuestbookPage';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/guestbook" element={<GuestbookPage />} />
         </Route>
       </Routes>
     </>

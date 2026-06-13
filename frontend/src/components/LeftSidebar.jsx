@@ -74,6 +74,13 @@ export default function LeftSidebar() {
   const params = new URLSearchParams(window.location.search);
   const currentTag = params.get('tag');
 
+  // Rotate card colors: warm → rose → brand → repeat
+  const cardColors = [
+    'bg-warm/15 border-warm/30 hover:border-warm',
+    'bg-rose/10 border-rose/20 hover:border-rose',
+    'bg-brand-light/30 border-brand/25 hover:border-brand',
+  ];
+
   return (
     <aside className="space-y-6 text-sm">
       {/* Owner info */}
@@ -89,7 +96,7 @@ export default function LeftSidebar() {
           <div>
             <div className="font-semibold text-gray-900">{owner.username}</div>
             {!editingBio && (
-              <p className="text-xs text-gray-500 mt-0.5">{owner.bio || t('sidebar.noBio')}</p>
+              <p className="text-xs text-gray-600 mt-0.5">{owner.bio || t('sidebar.noBio')}</p>
             )}
           </div>
         </Link>
@@ -125,11 +132,11 @@ export default function LeftSidebar() {
             )}
           </div>
           {owner.intro ? (
-            <div data-color-mode="light">
+            <div data-color-mode="light" className="sidebar-about-content">
               <MDEditor.Markdown source={owner.intro} />
             </div>
           ) : (
-            <p className="text-xs text-gray-400 italic">{t('sidebar.nothingWritten')}</p>
+            <p className="text-xs text-gray-500 italic">{t('sidebar.nothingWritten')}</p>
           )}
         </section>
       )}
@@ -175,7 +182,7 @@ export default function LeftSidebar() {
               <div
                 key={i}
                 onClick={() => setExpandedCard(card)}
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md hover:border-brand transition-all bg-white cursor-pointer group relative"
+                className={`block rounded-lg overflow-hidden border hover:shadow-md transition-all cursor-pointer group relative ${cardColors[i % 3]}`}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') setExpandedCard(card); }}
@@ -193,7 +200,7 @@ export default function LeftSidebar() {
                 )}
                 <div className="p-3">
                   {card.title && <div className="font-semibold text-gray-800 text-sm truncate">{card.title}</div>}
-                  {card.description && <div className="text-gray-500 text-xs mt-1 line-clamp-2">{card.description}</div>}
+                  {card.description && <div className="text-gray-600 text-xs mt-1 line-clamp-2">{card.description}</div>}
                   {!card.image && (
                     <div className="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       Click to expand →

@@ -73,8 +73,8 @@ function StatsTab({ t }) {
 
   const cards = [
     { label: t('admin.totalUsers'), value: stats.total_users, color: 'bg-brand/10 text-brand' },
-    { label: t('admin.totalArticles'), value: stats.total_articles, color: 'bg-green-50 text-green-700' },
-    { label: t('admin.totalComments'), value: stats.total_comments, color: 'bg-warm/10 text-warm-hover' },
+    { label: t('admin.totalArticles'), value: stats.total_articles, color: 'bg-brand-light/40 text-brand-hover' },
+    { label: t('admin.totalComments'), value: stats.total_comments, color: 'bg-warm/15 text-warm-hover' },
     { label: t('admin.totalLikes'), value: stats.total_likes, color: 'bg-rose/10 text-rose-hover' },
   ];
 
@@ -147,8 +147,8 @@ function UsersTab({ t, confirm, setConfirm }) {
       {loading ? <div className="text-gray-400">{t('common.loading')}</div> : (
         <>
           <div className="space-y-2">
-            {users.map((u) => (
-              <div key={u.id} className="bg-white rounded-lg border p-4">
+            {users.map((u, i) => (
+              <div key={u.id} className={`rounded-lg border p-4 ${i % 2 === 0 ? 'bg-white' : 'bg-brand-light/15'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{u.username}</span>
@@ -240,8 +240,8 @@ function ArticlesTab({ t, confirm, setConfirm }) {
       {loading ? <div className="text-gray-400">{t('common.loading')}</div> : (
         <>
           <div className="space-y-2">
-            {articles.map((a) => (
-              <div key={a.id} className="flex items-center gap-4 bg-white rounded-lg border p-4">
+            {articles.map((a, i) => (
+              <div key={a.id} className={`flex items-center gap-4 rounded-lg border p-4 ${i % 2 === 0 ? 'bg-white' : 'bg-brand-light/15'}`}>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate">{a.title}</div>
                   <div className="text-sm text-gray-400">
@@ -306,8 +306,8 @@ function CommentsTab({ t, confirm, setConfirm }) {
       {loading ? <div className="text-gray-400">{t('common.loading')}</div> : (
         <>
           <div className="space-y-2">
-            {comments.map((c) => (
-              <div key={c.id} className="bg-white rounded-lg border p-4">
+            {comments.map((c, i) => (
+              <div key={c.id} className={`rounded-lg border p-4 ${i % 2 === 0 ? 'bg-white' : 'bg-brand-light/15'}`}>
                 <div className="flex items-start gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-gray-700 line-clamp-2">{c.content}</div>

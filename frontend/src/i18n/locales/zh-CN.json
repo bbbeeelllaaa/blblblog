@@ -18,6 +18,7 @@
     "home": "首页",
     "write": "写文章",
     "favorites": "收藏",
+    "guestbook": "留言板",
     "admin": "管理",
     "profile": "个人中心",
     "login": "登录",
@@ -240,6 +241,29 @@
     "confirmDeleteComment": "删除这条评论？",
     "commentDeleted": "评论已删除",
     "failedToLoadComments": "加载评论列表失败"
+  },
+  "guestbook": {
+    "title": "留言板",
+    "description": "共 {{total}} 条留言",
+    "leaveMessage": "写下你想说的话",
+    "writePlaceholder": "说点什么吧...",
+    "loginToPost": "请先登录再留言",
+    "postMessage": "发布留言",
+    "posting": "发布中...",
+    "posted": "留言发布成功！",
+    "failedToPost": "留言发布失败",
+    "addImage": "添加图片",
+    "uploadingImage": "上传中...",
+    "imageTypeError": "只支持图片格式",
+    "fileTooLarge": "图片大小不能超过 5MB",
+    "uploadFailed": "图片上传失败",
+    "messageImage": "留言图片",
+    "delete": "删除留言",
+    "confirmDelete": "确定要删除这条留言吗？",
+    "deleted": "留言已删除",
+    "noMessages": "还没有留言",
+    "beFirst": "成为第一个留言的人吧！",
+    "pleaseLogin": "请先登录"
   },
   "footer": {
     "text": "© {{year}} blblblog. 使用 FastAPI & React 构建。"
