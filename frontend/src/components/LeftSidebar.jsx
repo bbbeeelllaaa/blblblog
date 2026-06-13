@@ -22,6 +22,7 @@ export default function LeftSidebar() {
   const [introText, setIntroText] = useState('');
   // Featured cards editing
   const [editingCards, setEditingCards] = useState(false);
+  const [expandedCard, setExpandedCard] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const isOwner = user?.is_admin && sidebar?.owner && user.id === sidebar.owner.id;
@@ -171,25 +172,91 @@ export default function LeftSidebar() {
         ) : cards.length > 0 ? (
           <div className="space-y-3">
             {cards.map((card, i) => (
-              <a
+              <div
                 key={i}
-                href={card.url || '#'}
-                target={card.url ? '_blank' : undefined}
-                rel={card.url ? 'noopener noreferrer' : undefined}
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all bg-white"
+                onClick={() => setExpandedCard(card)}
+                className="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all bg-white cursor-pointer group relative"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter') setExpandedCard(card); }}
               >
                 {card.image && (
-                  <img src={card.image} alt={card.title} className="w-full h-32 object-cover" />
+                  <div className="relative">
+                    <img src={card.image} alt={card.title} className="w-full h-32 object-cover" />
+                    {/* Expand hint overlay */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                    </div>
+                  </div>
                 )}
                 <div className="p-3">
-                  {card.title && <div className="font-semibold text-gray-800 text-sm">{card.title}</div>}
+                  {card.title && <div className="font-semibold text-gray-800 text-sm truncate">{card.title}</div>}
                   {card.description && <div className="text-gray-500 text-xs mt-1 line-clamp-2">{card.description}</div>}
+                  {!card.image && (
+                    <div className="text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Click to expand →
+                    </div>
+                  )}
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         ) : (
           <p className="text-xs text-gray-400 italic">{t('sidebar.noFeatured')}</p>
+        )}
+
+        {/* Card detail modal */}
+        {expandedCard && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" onClick={() => setExpandedCard(null)}>
+            <div className="absolute inset-0 bg-black/50" />
+            <div
+              className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setExpandedCard(null)}
+                className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+              >
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {expandedCard.image && (
+                <img
+                  src={expandedCard.image}
+                  alt={expandedCard.title}
+                  className="w-full max-h-64 object-cover"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              )}
+
+              <div className="p-6">
+                {expandedCard.title && (
+                  <h2 className="text-lg font-bold text-gray-900 mb-2">{expandedCard.title}</h2>
+                )}
+                {expandedCard.description && (
+                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{expandedCard.description}</p>
+                )}
+                {expandedCard.url && (
+                  <a
+                    href={expandedCard.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Visit Link
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </section>
 
