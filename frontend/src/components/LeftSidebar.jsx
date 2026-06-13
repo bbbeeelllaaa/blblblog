@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { useAuth } from '../hooks/useAuth';
 import { siteAPI, getErrorDetail } from '../services/api';
+import { parseJsonArray } from '../utils/json';
+import FeaturedCardsEditor from './FeaturedCardsEditor';
 import toast from 'react-hot-toast';
 
 export default function LeftSidebar() {
@@ -18,7 +20,6 @@ export default function LeftSidebar() {
   const [introText, setIntroText] = useState('');
   // Featured cards editing
   const [editingCards, setEditingCards] = useState(false);
-  const [cardsJson, setCardsJson] = useState('');
   const [saving, setSaving] = useState(false);
 
   const isOwner = user?.is_admin && sidebar?.owner && user.id === sidebar.owner.id;
@@ -66,7 +67,7 @@ export default function LeftSidebar() {
   }
 
   const { owner, tags = [] } = sidebar;
-  const cards = parseJson(owner.featured_cards);
+  const cards = parseJsonArray(owner.featured_cards);
   const params = new URLSearchParams(window.location.search);
   const currentTag = params.get('tag');
 
@@ -148,7 +149,7 @@ export default function LeftSidebar() {
           <h3 className="text-sm font-semibold text-gray-800">每日推送</h3>
           {isOwner && (
             <button
-              onClick={() => { setCardsJson(JSON.stringify(cards, null, 2)); setEditingCards(!editingCards); }}
+              onClick={() => setEditingCards(!editingCards)}
               className="text-xs text-gray-400 hover:text-blue-500"
             >
               {editingCards ? 'Cancel' : 'Edit'}
@@ -156,16 +157,15 @@ export default function LeftSidebar() {
           )}
         </div>
         {editingCards ? (
-          <div className="space-y-2">
-            <textarea
-              value={cardsJson}
-              onChange={(e) => setCardsJson(e.target.value)}
-              rows={8}
-              className="input-field text-xs font-mono"
-              placeholder='[{"image":"https://...","title":"Title","description":"Brief description","url":"https://..."}]'
-            />
-            <button onClick={() => { saveOwner({ featured_cards: cardsJson }); setEditingCards(false); }} disabled={saving} className="btn-primary text-xs py-1 px-3">Save</button>
-          </div>
+          <FeaturedCardsEditor
+            cards={cards}
+            onSave={async (jsonStr) => {
+              await saveOwner({ featured_cards: jsonStr });
+              setEditingCards(false);
+            }}
+            onCancel={() => setEditingCards(false)}
+            saving={saving}
+          />
         ) : cards.length > 0 ? (
           <div className="space-y-3">
             {cards.map((card, i) => (
@@ -222,14 +222,4 @@ export default function LeftSidebar() {
       )}
     </aside>
   );
-}
-
-function parseJson(raw) {
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
 }
