@@ -12,9 +12,25 @@ export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const rightPanelRef = useRef(null);
   const leftPanelRef = useRef(null);
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileSidebarOpen]);
 
   // Save scroll before route change, restore on new route
   useEffect(() => {
@@ -156,18 +172,60 @@ export default function Layout() {
       {/* Main content */}
       <main className="flex-1 w-full">
         {showSidebar ? (
-          <div className="flex max-w-7xl mx-auto px-4 py-6" style={{ height: 'calc(100vh - 64px)' }}>
-            <div ref={leftPanelRef} className="w-[40%] shrink-0 hidden md:block overflow-y-auto pr-4">
-              <div className="pb-8">
-                <LeftSidebar />
+          <>
+            {/* Mobile sidebar toggle button - hide when sidebar is open */}
+            {!mobileSidebarOpen && (
+              <div className="md:hidden fixed bottom-4 left-4 z-40">
+                <button
+                  onClick={() => setMobileSidebarOpen(true)}
+                  className="w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                  aria-label="Open sidebar"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {/* Mobile sidebar overlay */}
+            {mobileSidebarOpen && (
+              <div className="md:hidden fixed inset-0 z-50">
+                <div className="absolute inset-0 bg-black/40" onClick={() => setMobileSidebarOpen(false)} />
+                <div className="absolute left-0 top-0 bottom-0 w-[85%] max-w-sm bg-white shadow-xl overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+                    <span className="font-semibold text-gray-800">Sidebar</span>
+                    <button
+                      onClick={() => setMobileSidebarOpen(false)}
+                      className="p-1 rounded-lg hover:bg-gray-100"
+                      aria-label="Close sidebar"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="p-4">
+                    <LeftSidebar />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Desktop layout */}
+            <div className="flex max-w-7xl mx-auto px-4 py-6" style={{ height: 'calc(100vh - 64px)' }}>
+              <div ref={leftPanelRef} className="w-[40%] shrink-0 hidden md:block overflow-y-auto pr-4">
+                <div className="pb-8">
+                  <LeftSidebar />
+                </div>
+              </div>
+              <div ref={rightPanelRef} className="flex-1 min-w-0 overflow-y-auto md:pl-4">
+                <div className="pb-8">
+                  <Outlet />
+                </div>
               </div>
             </div>
-            <div ref={rightPanelRef} className="flex-1 min-w-0 overflow-y-auto pl-4">
-              <div className="pb-8">
-                <Outlet />
-              </div>
-            </div>
-          </div>
+          </>
         ) : (
           <div className="max-w-4xl mx-auto px-4 py-6">
             <Outlet />
