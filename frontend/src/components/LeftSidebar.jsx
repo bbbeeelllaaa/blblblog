@@ -82,7 +82,7 @@ export default function LeftSidebar() {
           {owner.avatar ? (
             <img src={owner.avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white text-lg font-medium">
+            <div className="w-12 h-12 rounded-full bg-brand flex items-center justify-center text-white text-lg font-medium">
               {owner.username?.[0]?.toUpperCase()}
             </div>
           )}
@@ -96,7 +96,7 @@ export default function LeftSidebar() {
         {isOwner && !editingBio && (
           <button
             onClick={() => { setBioText(owner.bio || ''); setEditingBio(true); }}
-            className="text-xs text-gray-400 hover:text-blue-500 mt-1"
+            className="text-xs text-gray-400 hover:text-brand mt-1"
           >
             {t('sidebar.editBio')}
           </button>
@@ -106,7 +106,7 @@ export default function LeftSidebar() {
             <textarea value={bioText} onChange={(e) => setBioText(e.target.value)}
               rows={2} className="input-field text-xs" placeholder={t('sidebar.shortBio')} />
             <div className="flex gap-1">
-              <button onClick={() => { saveOwner({ bio: bioText }); setEditingBio(false); }} disabled={saving} className="text-xs text-blue-500">{t('common.save')}</button>
+              <button onClick={() => { saveOwner({ bio: bioText }); setEditingBio(false); }} disabled={saving} className="text-xs text-brand">{t('common.save')}</button>
               <button onClick={() => setEditingBio(false)} className="text-xs text-gray-400">{t('common.cancel')}</button>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function LeftSidebar() {
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold text-gray-800">{t('sidebar.about')}</h3>
             {isOwner && (
-              <button onClick={() => { setIntroText(owner.intro || ''); setEditingIntro(true); }} className="text-xs text-gray-400 hover:text-blue-500">
+              <button onClick={() => { setIntroText(owner.intro || ''); setEditingIntro(true); }} className="text-xs text-gray-400 hover:text-brand">
                 {t('common.edit')}
               </button>
             )}
@@ -153,7 +153,7 @@ export default function LeftSidebar() {
           {isOwner && (
             <button
               onClick={() => setEditingCards(!editingCards)}
-              className="text-xs text-gray-400 hover:text-blue-500"
+              className="text-xs text-gray-400 hover:text-brand"
             >
               {editingCards ? t('common.cancel') : t('common.edit')}
             </button>
@@ -175,7 +175,7 @@ export default function LeftSidebar() {
               <div
                 key={i}
                 onClick={() => setExpandedCard(card)}
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md hover:border-blue-300 transition-all bg-white cursor-pointer group relative"
+                className="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md hover:border-brand transition-all bg-white cursor-pointer group relative"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') setExpandedCard(card); }}
@@ -246,7 +246,7 @@ export default function LeftSidebar() {
                     href={expandedCard.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium text-white bg-brand hover:bg-brand-hover px-4 py-2 rounded-lg transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -276,7 +276,7 @@ export default function LeftSidebar() {
                     to={`/?tag=${tag.name}`}
                     className={`inline-block text-xs px-2.5 py-1 rounded-full transition-colors ${
                       currentTag === tag.name
-                        ? 'bg-blue-500 text-white'
+                        ? 'bg-brand text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >

@@ -21,7 +21,7 @@ export default function ResetPasswordPage() {
           <p className="text-gray-500 text-sm mb-4">
             {t('auth.invalidLinkDesc')}
           </p>
-          <Link to="/login" className="text-blue-600 hover:underline text-sm">
+          <Link to="/login" className="text-brand hover:underline text-sm">
             {t('auth.backToLogin')}
           </Link>
         </div>
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
-          <Link to="/login" className="text-blue-600 hover:underline">{t('auth.backToLogin')}</Link>
+          <Link to="/login" className="text-brand hover:underline">{t('auth.backToLogin')}</Link>
         </p>
       </div>
     </div>

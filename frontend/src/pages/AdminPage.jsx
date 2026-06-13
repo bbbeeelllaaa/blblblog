@@ -37,7 +37,7 @@ export default function AdminPage() {
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === tab.key
-                ? 'border-purple-600 text-purple-600'
+                ? 'border-brand text-brand'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}>
             {tab.label}
@@ -72,10 +72,10 @@ function StatsTab({ t }) {
   if (!stats) return <div className="text-gray-400">{t('common.loading')}</div>;
 
   const cards = [
-    { label: t('admin.totalUsers'), value: stats.total_users, color: 'bg-blue-50 text-blue-700' },
+    { label: t('admin.totalUsers'), value: stats.total_users, color: 'bg-brand/10 text-brand' },
     { label: t('admin.totalArticles'), value: stats.total_articles, color: 'bg-green-50 text-green-700' },
-    { label: t('admin.totalComments'), value: stats.total_comments, color: 'bg-yellow-50 text-yellow-700' },
-    { label: t('admin.totalLikes'), value: stats.total_likes, color: 'bg-red-50 text-red-700' },
+    { label: t('admin.totalComments'), value: stats.total_comments, color: 'bg-warm/10 text-warm-hover' },
+    { label: t('admin.totalLikes'), value: stats.total_likes, color: 'bg-rose/10 text-rose-hover' },
   ];
 
   return (
@@ -152,7 +152,7 @@ function UsersTab({ t, confirm, setConfirm }) {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{u.username}</span>
-                    {u.is_admin && <span className="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">{t('admin.admin')}</span>}
+                    {u.is_admin && <span className="text-xs bg-brand/20 text-brand px-2 py-0.5 rounded">{t('admin.admin')}</span>}
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => handleToggleAdmin(u)}
@@ -160,7 +160,7 @@ function UsersTab({ t, confirm, setConfirm }) {
                       {u.is_admin ? t('admin.demote') : t('admin.makeAdmin')}
                     </button>
                     <button onClick={() => handleDelete(u)}
-                      className="text-xs px-3 py-1 rounded border border-red-200 text-red-500 hover:bg-red-50">
+                      className="text-xs px-3 py-1 rounded border border-rose/20 text-rose hover:bg-rose/10">
                       {t('admin.delete')}
                     </button>
                   </div>
@@ -252,7 +252,7 @@ function ArticlesTab({ t, confirm, setConfirm }) {
                   {new Date(a.created_at).toLocaleDateString()}
                 </div>
                 <button onClick={() => handleDelete(a)}
-                  className="text-xs px-3 py-1 rounded border border-red-200 text-red-500 hover:bg-red-50">
+                  className="text-xs px-3 py-1 rounded border border-rose/20 text-rose hover:bg-rose/10">
                   {t('admin.delete')}
                 </button>
               </div>
@@ -318,7 +318,7 @@ function CommentsTab({ t, confirm, setConfirm }) {
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="text-xs text-gray-400">{new Date(c.created_at).toLocaleDateString()}</span>
                     <button onClick={() => handleDelete(c)}
-                      className="text-xs px-3 py-1 rounded border border-red-200 text-red-500 hover:bg-red-50">
+                      className="text-xs px-3 py-1 rounded border border-rose/20 text-rose hover:bg-rose/10">
                       {t('admin.delete')}
                     </button>
                   </div>

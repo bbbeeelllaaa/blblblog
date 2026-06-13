@@ -48,16 +48,16 @@ export default function TagInput({ value = [], onChange, placeholder = 'Add tags
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 p-1.5 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent bg-white min-h-[42px] cursor-text"
+    <div className="flex flex-wrap items-center gap-1.5 p-1.5 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-brand focus-within:border-transparent bg-white min-h-[42px] cursor-text"
       onClick={handleContainerClick}
     >
       {tags.map((tag, i) => (
-        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full border border-blue-200">
+        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand/10 text-brand-hover text-xs rounded-full border border-brand/20">
           {tag}
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); removeTag(i); }}
-            className="w-3.5 h-3.5 rounded-full inline-flex items-center justify-center hover:bg-blue-200 hover:text-blue-800 transition-colors"
+            className="w-3.5 h-3.5 rounded-full inline-flex items-center justify-center hover:bg-brand/20 hover:text-brand-hover transition-colors"
           >
             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />

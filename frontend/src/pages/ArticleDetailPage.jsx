@@ -113,7 +113,7 @@ export default function ArticleDetailPage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
         {article.title}
         {!article.is_published && (
-          <span className="ml-3 inline-block align-middle text-xs font-normal px-2 py-0.5 bg-amber-100 text-amber-700 rounded">
+          <span className="ml-3 inline-block align-middle text-xs font-normal px-2 py-0.5 bg-warm/20 text-rose rounded">
             {t('article.draft')}
           </span>
         )}
@@ -125,7 +125,7 @@ export default function ArticleDetailPage() {
           {article.author_avatar ? (
             <img src={article.author_avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
+            <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white font-medium">
               {article.author_name?.[0]?.toUpperCase()}
             </div>
           )}
@@ -151,7 +151,7 @@ export default function ArticleDetailPage() {
         <div className="flex gap-2 mb-6">
           {article.tags.map((tag) => (
             <Link key={tag.id} to={`/?tag=${tag.name}`}
-              className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full hover:bg-blue-100">
+              className="text-xs bg-brand/10 text-brand px-3 py-1 rounded-full hover:bg-brand/20">
               {tag.name}
             </Link>
           ))}
@@ -162,7 +162,7 @@ export default function ArticleDetailPage() {
       <div className="mb-6">
         {!summary ? (
           <button onClick={handleAISummary} disabled={summaryLoading}
-            className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+            className="text-sm text-brand hover:text-brand-hover flex items-center gap-1">
             {summaryLoading ? (
               t('article.generatingSummary')
             ) : (
@@ -176,9 +176,9 @@ export default function ArticleDetailPage() {
             )}
           </button>
         ) : (
-          <div className="bg-blue-50 rounded-lg p-4">
+          <div className="bg-brand/10 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-blue-600 font-medium">
+              <span className="text-xs text-brand font-medium">
                 {t('article.aiSummaryLabel', { method: summary.method === 'ai' ? 'GPT' : 'Extractive' })}
               </span>
               <button onClick={() => setSummary(null)} className="text-xs text-gray-400 hover:text-gray-600">{t('article.dismiss')}</button>
@@ -192,7 +192,7 @@ export default function ArticleDetailPage() {
       <div className="flex items-center gap-4 mb-8">
         <button onClick={handleLike}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-            article.is_liked ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+            article.is_liked ? 'bg-rose/10 text-rose' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
           }`}>
           <svg className="w-5 h-5" fill={article.is_liked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -201,7 +201,7 @@ export default function ArticleDetailPage() {
         </button>
         <button onClick={handleFavorite}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-            article.is_favorited ? 'bg-yellow-50 text-yellow-500' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+            article.is_favorited ? 'bg-warm/10 text-warm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
           }`}>
           <svg className="w-5 h-5" fill={article.is_favorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />

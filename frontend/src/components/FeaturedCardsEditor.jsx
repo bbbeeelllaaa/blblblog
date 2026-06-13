@@ -121,7 +121,7 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
               <button
                 type="button"
                 onClick={() => removeCard(index)}
-                className="text-xs p-1 rounded hover:bg-red-100 text-gray-400 hover:text-red-500"
+                className="text-xs p-1 rounded hover:bg-rose/20 text-gray-400 hover:text-rose"
                 title="Remove card"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,16 +145,16 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
                 <button
                   type="button"
                   onClick={() => updateCard(index, 'image', '')}
-                  className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                  className="absolute top-1 right-1 w-5 h-5 bg-rose text-white rounded-full text-xs flex items-center justify-center hover:bg-rose-hover"
                 >
                   x
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center h-28 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors group">
+              <label className="flex flex-col items-center justify-center h-28 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-brand hover:bg-brand/10 transition-colors group">
                 {uploading[index] ? (
                   <div className="flex flex-col items-center gap-1">
-                    <svg className="w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-brand animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
@@ -162,10 +162,10 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-1">
-                    <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-gray-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Click to upload image</span>
+                    <span className="text-xs text-gray-400 group-hover:text-brand transition-colors">Click to upload image</span>
                   </div>
                 )}
                 <input
@@ -184,28 +184,28 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
               value={card.image}
               onChange={(e) => updateCard(index, 'image', e.target.value)}
               placeholder="Or paste image URL..."
-              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand focus:border-transparent"
             />
             <input
               type="text"
               value={card.title}
               onChange={(e) => updateCard(index, 'title', e.target.value)}
               placeholder="Title"
-              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand focus:border-transparent"
             />
             <textarea
               value={card.description}
               onChange={(e) => updateCard(index, 'description', e.target.value)}
               rows={2}
               placeholder="Short description (optional)"
-              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-transparent resize-none"
+              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand focus:border-transparent resize-none"
             />
             <input
               type="text"
               value={card.url}
               onChange={(e) => updateCard(index, 'url', e.target.value)}
               placeholder="Link URL (e.g. https://...)"
-              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+              className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand focus:border-transparent"
             />
           </div>
 
@@ -234,7 +234,7 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
         <button
           type="button"
           onClick={addCard}
-          className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-xs text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors"
+          className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-xs text-gray-400 hover:border-brand hover:text-brand transition-colors"
         >
           + Add a card
         </button>

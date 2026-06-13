@@ -96,7 +96,7 @@ export default function ProfilePage() {
       <div className="card mb-6">
         <div className="flex items-center gap-6 mb-6">
           <div
-            className={`relative ${dragOver ? 'ring-2 ring-blue-400 rounded-full' : ''}`}
+            className={`relative ${dragOver ? 'ring-2 ring-brand rounded-full' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -104,7 +104,7 @@ export default function ProfilePage() {
             {user.avatar ? (
               <img src={user.avatar} alt="" className="w-20 h-20 rounded-full object-cover" />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-medium">
+              <div className="w-20 h-20 rounded-full bg-brand flex items-center justify-center text-white text-2xl font-medium">
                 {user.username?.[0]?.toUpperCase()}
               </div>
             )}
@@ -138,7 +138,7 @@ export default function ProfilePage() {
           <div>
             <div className="text-lg font-medium">{user.username}</div>
             <div className="text-sm text-gray-500">{user.email}</div>
-            {dragOver && <div className="text-xs text-blue-500 mt-1">{t('profile.dropImage')}</div>}
+            {dragOver && <div className="text-xs text-brand mt-1">{t('profile.dropImage')}</div>}
           </div>
         </div>
 

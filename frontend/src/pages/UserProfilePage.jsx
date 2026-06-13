@@ -76,7 +76,7 @@ export default function UserProfilePage() {
           {profile?.avatar ? (
             <img src={profile.avatar} alt="" className="w-24 h-24 rounded-full object-cover" />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-blue-500 flex items-center justify-center text-white text-3xl font-medium">
+            <div className="w-24 h-24 rounded-full bg-brand flex items-center justify-center text-white text-3xl font-medium">
               {profile?.username?.[0]?.toUpperCase()}
             </div>
           )}
@@ -111,7 +111,7 @@ export default function UserProfilePage() {
           </h2>
           <div className="space-y-3">
             {drafts.map((draft) => (
-              <div key={draft.id} className="card border-dashed border-amber-200 bg-amber-50/50">
+              <div key={draft.id} className="card border-dashed border-warm/20 bg-warm/10/50">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-gray-900 truncate">{draft.title}</h3>
@@ -122,7 +122,7 @@ export default function UserProfilePage() {
                   <div className="flex gap-2 shrink-0 ml-4">
                     <button
                       onClick={() => navigate(`/articles/${draft.id}/edit`)}
-                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-xs text-brand hover:text-brand-hover font-medium"
                     >
                       {t('common.edit')}
                     </button>

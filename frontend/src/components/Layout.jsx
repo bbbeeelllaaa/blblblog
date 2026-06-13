@@ -85,7 +85,7 @@ export default function Layout() {
       <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-xl font-bold text-blue-600 shrink-0">
+            <Link to="/" className="text-xl font-bold text-brand shrink-0">
               {t('nav.brand')}
             </Link>
 
@@ -100,29 +100,29 @@ export default function Layout() {
             </form>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link to="/" className="text-gray-600 hover:text-blue-600 text-sm">{t('nav.home')}</Link>
+              <Link to="/" className="text-gray-600 hover:text-brand text-sm">{t('nav.home')}</Link>
               {user ? (
                 <>
                   <Link to="/articles/new" className="btn-primary text-sm">{t('nav.write')}</Link>
-                  <Link to="/favorites" className="text-gray-600 hover:text-blue-600 text-sm">{t('nav.favorites')}</Link>
-                  {user.is_admin && <Link to="/admin" className="text-purple-600 hover:text-purple-700 text-sm font-medium">{t('nav.admin')}</Link>}
-                  <Link to="/profile" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 text-sm">
+                  <Link to="/favorites" className="text-gray-600 hover:text-brand text-sm">{t('nav.favorites')}</Link>
+                  {user.is_admin && <Link to="/admin" className="text-brand hover:text-brand-hover text-sm font-medium">{t('nav.admin')}</Link>}
+                  <Link to="/profile" className="flex items-center gap-2 text-gray-600 hover:text-brand text-sm">
                     {user.avatar ? (
                       <img src={user.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium">
+                      <div className="w-7 h-7 rounded-full bg-brand flex items-center justify-center text-white text-xs font-medium">
                         {user.username?.[0]?.toUpperCase()}
                       </div>
                     )}
                     {user.username}
                   </Link>
-                  <button onClick={handleLogout} className="text-gray-500 hover:text-red-500 text-sm">
+                  <button onClick={handleLogout} className="text-gray-500 hover:text-rose text-sm">
                     {t('nav.logout')}
                   </button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="text-gray-600 hover:text-blue-600 text-sm">{t('nav.login')}</Link>
+                  <Link to="/login" className="text-gray-600 hover:text-brand text-sm">{t('nav.login')}</Link>
                   <Link to="/register" className="btn-primary text-sm">{t('nav.register')}</Link>
                 </>
               )}
@@ -168,16 +168,16 @@ export default function Layout() {
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.home')}</Link>
                 {user ? (
                   <>
-                    <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">{t('nav.writeArticle')}</Link>
+                    <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-brand py-2">{t('nav.writeArticle')}</Link>
                     <Link to="/favorites" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.favorites')}</Link>
-                    {user.is_admin && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-purple-600 py-2">{t('nav.adminPanel')}</Link>}
+                    {user.is_admin && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-brand py-2">{t('nav.adminPanel')}</Link>}
                     <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.profile')}</Link>
-                    <button onClick={handleLogout} className="text-red-500 py-2 text-left">{t('nav.logout')}</button>
+                    <button onClick={handleLogout} className="text-rose py-2 text-left">{t('nav.logout')}</button>
                   </>
                 ) : (
                   <>
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.login')}</Link>
-                    <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">{t('nav.register')}</Link>
+                    <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="text-brand py-2">{t('nav.register')}</Link>
                   </>
                 )}
                 <div className="pt-2 border-t border-gray-100 flex items-center gap-2">
@@ -204,7 +204,7 @@ export default function Layout() {
               <div className="md:hidden fixed bottom-4 left-4 z-40">
                 <button
                   onClick={() => setMobileSidebarOpen(true)}
-                  className="w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                  className="w-12 h-12 bg-brand text-white rounded-full shadow-lg flex items-center justify-center hover:bg-brand-hover transition-colors"
                   aria-label={t('nav.openSidebar')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -79,7 +79,7 @@ export default function SearchPage() {
         {tagParam && (
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <span>{t('search.tagActive', { tag: tagParam })}</span>
-            <button type="button" onClick={clearTag} className="text-red-400 hover:text-red-600 text-xs">&times; {t('search.clearTag', { tag: tagParam })}</button>
+            <button type="button" onClick={clearTag} className="text-rose hover:text-rose-hover text-xs">&times; {t('search.clearTag', { tag: tagParam })}</button>
           </div>
         )}
       </form>
@@ -103,7 +103,7 @@ export default function SearchPage() {
           {results.map((item) => (
             <div key={item.id} className="card hover:shadow-md transition-shadow">
               <Link to={`/articles/${item.id}`}>
-                <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 mb-1">
+                <h3 className="text-lg font-semibold text-gray-900 hover:text-brand mb-1">
                   {item.title}
                 </h3>
               </Link>
@@ -111,7 +111,7 @@ export default function SearchPage() {
                 <p className="text-sm text-gray-600 line-clamp-2 mb-2">{item.summary}</p>
               )}
               <div className="flex items-center gap-3 text-xs text-gray-400">
-                <Link to={`/users/${item.author_id}`} className="flex items-center gap-1 hover:text-blue-500">
+                <Link to={`/users/${item.author_id}`} className="flex items-center gap-1 hover:text-brand">
                   {item.author_avatar ? (
                     <img src={item.author_avatar} alt="" className="w-4 h-4 rounded-full object-cover" />
                   ) : null}
@@ -121,13 +121,13 @@ export default function SearchPage() {
                 {item.like_count > 0 && <span>{t('search.likes', { count: item.like_count })}</span>}
                 {item.comment_count > 0 && <span>{t('search.comments', { count: item.comment_count })}</span>}
                 {item.relevance > 0 && (
-                  <span className="text-blue-500">{t('search.relevance', { pct: (item.relevance * 100).toFixed(0) })}</span>
+                  <span className="text-brand">{t('search.relevance', { pct: (item.relevance * 100).toFixed(0) })}</span>
                 )}
               </div>
               {item.tags?.length > 0 && (
                 <div className="flex gap-2 mt-2">
                   {item.tags.map((tag) => (
-                    <span key={tag.id} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+                    <span key={tag.id} className="text-xs bg-brand/10 text-brand px-2 py-0.5 rounded-full">
                       {tag.name}
                     </span>
                   ))}

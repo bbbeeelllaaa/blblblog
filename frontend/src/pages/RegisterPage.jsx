@@ -76,7 +76,7 @@ export default function RegisterPage() {
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
-          {t('auth.hasAccount')} <Link to="/login" className="text-blue-600 hover:underline">{t('auth.login')}</Link>
+          {t('auth.hasAccount')} <Link to="/login" className="text-brand hover:underline">{t('auth.login')}</Link>
         </p>
       </div>
     </div>

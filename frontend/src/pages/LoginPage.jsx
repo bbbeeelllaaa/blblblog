@@ -64,10 +64,10 @@ export default function LoginPage() {
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-3">
-          <Link to="/forgot-password" className="text-blue-600 hover:underline">{t('auth.forgotPassword')}</Link>
+          <Link to="/forgot-password" className="text-brand hover:underline">{t('auth.forgotPassword')}</Link>
         </p>
         <p className="text-center text-sm text-gray-500 mt-1">
-          {t('auth.noAccount')} <Link to="/register" className="text-blue-600 hover:underline">{t('auth.register')}</Link>
+          {t('auth.noAccount')} <Link to="/register" className="text-brand hover:underline">{t('auth.register')}</Link>
         </p>
       </div>
     </div>

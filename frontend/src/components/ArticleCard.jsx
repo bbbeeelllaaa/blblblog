@@ -12,7 +12,7 @@ export default function ArticleCard({ article }) {
           {article.author_avatar ? (
             <img src={article.author_avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
           ) : (
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium">
+            <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white text-xs font-medium">
               {article.author_name?.[0]?.toUpperCase()}
             </div>
           )}
@@ -22,7 +22,7 @@ export default function ArticleCard({ article }) {
       </div>
 
       <Link to={`/articles/${article.id}`}>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-brand transition-colors">
           {article.title}
         </h2>
       </Link>
@@ -37,7 +37,7 @@ export default function ArticleCard({ article }) {
             <Link
               key={tag.id}
               to={`/?tag=${tag.name}`}
-              className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full hover:bg-blue-100"
+              className="text-xs bg-brand/10 text-brand px-2 py-1 rounded-full hover:bg-brand/20"
             >
               {tag.name}
             </Link>
