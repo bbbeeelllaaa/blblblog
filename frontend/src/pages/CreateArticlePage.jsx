@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import api, { articleAPI, getErrorDetail } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
+import TagInput from '../components/TagInput';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +14,7 @@ export default function CreateArticlePage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [summary, setSummary] = useState('');
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
@@ -120,7 +121,7 @@ export default function CreateArticlePage() {
         title: title.trim(),
         content: content.trim(),
         summary: summary.trim() || null,
-        tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
+        tags: tags,
         is_published: !isDraft,
       });
       toast.success(isDraft ? t('article.draftSaved') : t('article.articlePublished'));
@@ -140,8 +141,7 @@ export default function CreateArticlePage() {
           placeholder={t('article.titlePlaceholder')} className="input-field text-lg font-medium" required />
         <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)}
           placeholder={t('article.summaryPlaceholder')} className="input-field" />
-        <input type="text" value={tags} onChange={(e) => setTags(e.target.value)}
-          placeholder={t('article.tagsPlaceholder')} className="input-field" />
+        <TagInput value={tags} onChange={setTags} placeholder={t('article.tagsPlaceholder')} />
         <input type="file" ref={fileRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
         <div data-color-mode="light">
           <MDEditor
