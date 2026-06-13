@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LeftSidebar from './LeftSidebar';
 import toast from 'react-hot-toast';
@@ -9,6 +10,7 @@ let prevPath = null;
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -16,6 +18,12 @@ export default function Layout() {
   const [searchQuery, setSearchQuery] = useState('');
   const rightPanelRef = useRef(null);
   const leftPanelRef = useRef(null);
+
+  const toggleLanguage = () => {
+    const next = i18n.language === 'zh-CN' ? 'en' : 'zh-CN';
+    localStorage.setItem('lang', next);
+    i18n.changeLanguage(next);
+  };
 
   // Close mobile sidebar on route change
   useEffect(() => {
@@ -58,7 +66,7 @@ export default function Layout() {
 
   const handleLogout = () => {
     logout();
-    toast.success('Logged out');
+    toast.success(t('nav.loggedOut', 'Logged out'));
     navigate('/');
   };
 
@@ -78,26 +86,26 @@ export default function Layout() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="text-xl font-bold text-blue-600 shrink-0">
-              blblblog
+              {t('nav.brand')}
             </Link>
 
             <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
               <input
                 type="text"
-                placeholder="Search articles..."
+                placeholder={t('nav.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="input-field text-sm"
               />
             </form>
 
-            <div className="hidden md:flex items-center gap-4">
-              <Link to="/" className="text-gray-600 hover:text-blue-600 text-sm">Home</Link>
+            <div className="hidden md:flex items-center gap-3">
+              <Link to="/" className="text-gray-600 hover:text-blue-600 text-sm">{t('nav.home')}</Link>
               {user ? (
                 <>
-                  <Link to="/articles/new" className="btn-primary text-sm">Write</Link>
-                  <Link to="/favorites" className="text-gray-600 hover:text-blue-600 text-sm">Favorites</Link>
-                  {user.is_admin && <Link to="/admin" className="text-purple-600 hover:text-purple-700 text-sm font-medium">Admin</Link>}
+                  <Link to="/articles/new" className="btn-primary text-sm">{t('nav.write')}</Link>
+                  <Link to="/favorites" className="text-gray-600 hover:text-blue-600 text-sm">{t('nav.favorites')}</Link>
+                  {user.is_admin && <Link to="/admin" className="text-purple-600 hover:text-purple-700 text-sm font-medium">{t('nav.admin')}</Link>}
                   <Link to="/profile" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 text-sm">
                     {user.avatar ? (
                       <img src={user.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
@@ -109,15 +117,24 @@ export default function Layout() {
                     {user.username}
                   </Link>
                   <button onClick={handleLogout} className="text-gray-500 hover:text-red-500 text-sm">
-                    Logout
+                    {t('nav.logout')}
                   </button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="text-gray-600 hover:text-blue-600 text-sm">Login</Link>
-                  <Link to="/register" className="btn-primary text-sm">Register</Link>
+                  <Link to="/login" className="text-gray-600 hover:text-blue-600 text-sm">{t('nav.login')}</Link>
+                  <Link to="/register" className="btn-primary text-sm">{t('nav.register')}</Link>
                 </>
               )}
+
+              {/* Language toggle */}
+              <button
+                onClick={toggleLanguage}
+                className="ml-2 text-xs font-medium px-2 py-1 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-gray-600"
+                title={t('nav.language')}
+              >
+                {i18n.language === 'zh-CN' ? 'EN' : '中'}
+              </button>
             </div>
 
             {/* Mobile menu button */}
@@ -141,28 +158,37 @@ export default function Layout() {
               <form onSubmit={handleSearch}>
                 <input
                   type="text"
-                  placeholder="Search articles..."
+                  placeholder={t('nav.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="input-field text-sm w-full"
                 />
               </form>
               <div className="flex flex-col gap-2">
-                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">Home</Link>
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.home')}</Link>
                 {user ? (
                   <>
-                    <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">Write Article</Link>
-                    <Link to="/favorites" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">Favorites</Link>
-                    {user.is_admin && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-purple-600 py-2">Admin Panel</Link>}
-                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">Profile</Link>
-                    <button onClick={handleLogout} className="text-red-500 py-2 text-left">Logout</button>
+                    <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">{t('nav.writeArticle')}</Link>
+                    <Link to="/favorites" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.favorites')}</Link>
+                    {user.is_admin && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-purple-600 py-2">{t('nav.adminPanel')}</Link>}
+                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.profile')}</Link>
+                    <button onClick={handleLogout} className="text-red-500 py-2 text-left">{t('nav.logout')}</button>
                   </>
                 ) : (
                   <>
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">Login</Link>
-                    <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">Register</Link>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.login')}</Link>
+                    <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="text-blue-600 py-2">{t('nav.register')}</Link>
                   </>
                 )}
+                <div className="pt-2 border-t border-gray-100 flex items-center gap-2">
+                  <span className="text-xs text-gray-400">{t('nav.language')}:</span>
+                  <button
+                    onClick={toggleLanguage}
+                    className="text-xs font-medium px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 text-gray-600"
+                  >
+                    {i18n.language === 'zh-CN' ? 'English' : '中文'}
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -179,7 +205,7 @@ export default function Layout() {
                 <button
                   onClick={() => setMobileSidebarOpen(true)}
                   className="w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
-                  aria-label="Open sidebar"
+                  aria-label={t('nav.openSidebar')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
@@ -194,11 +220,11 @@ export default function Layout() {
                 <div className="absolute inset-0 bg-black/40" onClick={() => setMobileSidebarOpen(false)} />
                 <div className="absolute left-0 top-0 bottom-0 w-[85%] max-w-sm bg-white shadow-xl overflow-y-auto">
                   <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-                    <span className="font-semibold text-gray-800">Sidebar</span>
+                    <span className="font-semibold text-gray-800">{t('nav.sidebar')}</span>
                     <button
                       onClick={() => setMobileSidebarOpen(false)}
                       className="p-1 rounded-lg hover:bg-gray-100"
-                      aria-label="Close sidebar"
+                      aria-label={t('nav.closeSidebar')}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -237,7 +263,7 @@ export default function Layout() {
       {isHomePage && (
         <footer className="bg-white border-t border-gray-100 py-6">
           <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} blblblog. Built with FastAPI &amp; React.
+            {t('footer.text', { year: new Date().getFullYear() })}
           </div>
         </footer>
       )}
