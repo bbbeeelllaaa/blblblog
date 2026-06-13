@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 
 const EMPTY_CARD = { image: '', title: '', description: '', url: '' };
 
@@ -8,9 +10,10 @@ function isEmpty(card) {
 
 export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCancel, saving }) {
   const [cards, setCards] = useState(() => {
-    // Deep-clone initial cards
     return (initialCards || []).map(c => ({ ...EMPTY_CARD, ...c }));
   });
+  // Track upload state per card: { [index]: boolean }
+  const [uploading, setUploading] = useState({});
 
   const updateCard = (index, field, value) => {
     setCards(prev => {
@@ -18,6 +21,35 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
       next[index] = { ...next[index], [field]: value };
       return next;
     });
+  };
+
+  const handleImageUpload = async (index, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Basic validation
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are allowed');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File too large (max 5MB)');
+      return;
+    }
+
+    setUploading(prev => ({ ...prev, [index]: true }));
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.post('/upload/image', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      updateCard(index, 'image', res.data.url);
+    } catch {
+      toast.error('Upload failed');
+    } finally {
+      setUploading(prev => ({ ...prev, [index]: false }));
+    }
   };
 
   const addCard = () => {
@@ -101,11 +133,57 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
 
           {/* Fields */}
           <div className="space-y-2">
+            {/* Image upload area */}
+            {card.image ? (
+              <div className="relative">
+                <img
+                  src={card.image}
+                  alt=""
+                  className="w-full h-28 object-cover rounded border border-gray-200"
+                  onError={(e) => { e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><rect fill="%23f3f4f6" width="100" height="60"/><text x="50" y="35" text-anchor="middle" fill="%239ca3af" font-size="10">Image broken</text></svg>'; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => updateCard(index, 'image', '')}
+                  className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                >
+                  x
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center h-28 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors group">
+                {uploading[index] ? (
+                  <div className="flex flex-col items-center gap-1">
+                    <svg className="w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span className="text-xs text-gray-400">Uploading...</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-1">
+                    <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">Click to upload image</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(index, e)}
+                  className="hidden"
+                  disabled={uploading[index]}
+                />
+              </label>
+            )}
+
+            {/* URL input as secondary option */}
             <input
               type="text"
               value={card.image}
               onChange={(e) => updateCard(index, 'image', e.target.value)}
-              placeholder="Image URL (optional)"
+              placeholder="Or paste image URL..."
               className="w-full text-xs border border-gray-200 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-transparent"
             />
             <input
