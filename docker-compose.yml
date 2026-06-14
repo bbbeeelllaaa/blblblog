@@ -4,6 +4,7 @@ services:
   postgres:
     image: pgvector/pgvector:pg16
     container_name: blblblog-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-blog_user}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-blog_password}
@@ -21,6 +22,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: blblblog-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     healthcheck:
