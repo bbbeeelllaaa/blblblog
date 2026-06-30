@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { userAPI, articleAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
@@ -76,7 +76,14 @@ export default function UserProfilePage() {
         <div className="flex items-center gap-6">
           <Avatar src={profile?.avatar} letter={profile?.username?.[0]?.toUpperCase()} size="w-24 h-24" />
           <div>
-            <h1 className="text-2xl font-bold">{profile?.username}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold">{profile?.username}</h1>
+              {isSelf && (
+                <Link to="/profile" className="text-xs text-brand hover:text-brand-hover border border-brand/30 rounded-full px-3 py-0.5 transition-colors">
+                  {t('common.edit')}
+                </Link>
+              )}
+            </div>
             <p className="text-sm text-gray-500 mt-1">
               {t('profile.joined', { date: formatDate(profile?.created_at, i18n.language, { year: 'numeric', month: 'long' }) })}
             </p>

@@ -108,7 +108,7 @@ export default function Layout() {
                   <Link to="/articles/new" className="btn-primary text-sm">{t('nav.write')}</Link>
                   <Link to="/favorites" className="text-gray-600 hover:text-brand text-sm">{t('nav.favorites')}</Link>
                   {user.is_admin && <Link to="/admin" className="text-brand hover:text-brand-hover text-sm font-medium">{t('nav.admin')}</Link>}
-                  <Link to="/profile" className="flex items-center gap-2 text-gray-600 hover:text-brand text-sm">
+                  <Link to={`/users/${user.id}`} className="flex items-center gap-2 text-gray-600 hover:text-brand text-sm">
                     <Avatar src={user.avatar} letter={user.username?.[0]?.toUpperCase()} size="w-7 h-7" />
                     {user.username}
                   </Link>
@@ -168,7 +168,7 @@ export default function Layout() {
                     <Link to="/articles/new" onClick={() => setMobileMenuOpen(false)} className="text-brand py-2">{t('nav.writeArticle')}</Link>
                     <Link to="/favorites" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.favorites')}</Link>
                     {user.is_admin && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-brand py-2">{t('nav.adminPanel')}</Link>}
-                    <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.profile')}</Link>
+                    <Link to={`/users/${user.id}`} onClick={() => setMobileMenuOpen(false)} className="text-gray-600 py-2">{t('nav.profile')}</Link>
                     <button onClick={handleLogout} className="text-rose py-2 text-left">{t('nav.logout')}</button>
                   </>
                 ) : (

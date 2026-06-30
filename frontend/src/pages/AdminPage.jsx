@@ -193,7 +193,7 @@ function UsersTab({ t, confirm, setConfirm }) {
             ))}
             {users.length === 0 && <div className="text-gray-400 text-center py-8">{t('admin.noUsers')}</div>}
           </div>
-          {totalPages > 1 && <Pagination page={page} total={totalPages} onPage={setPage} />}
+          {totalPages > 1 && <Pagination page={page} total={totalPages} onPageChange={setPage} />}
         </>
       )}
     </div>
@@ -259,7 +259,7 @@ function ArticlesTab({ t, confirm, setConfirm }) {
             ))}
             {articles.length === 0 && <div className="text-gray-400 text-center py-8">{t('admin.noArticles')}</div>}
           </div>
-          {totalPages > 1 && <Pagination page={page} total={totalPages} onPage={setPage} />}
+          {totalPages > 1 && <Pagination page={page} total={totalPages} onPageChange={setPage} />}
         </>
       )}
     </div>
@@ -327,7 +327,7 @@ function CommentsTab({ t, confirm, setConfirm }) {
             ))}
             {comments.length === 0 && <div className="text-gray-400 text-center py-8">{t('admin.noComments')}</div>}
           </div>
-          {totalPages > 1 && <Pagination page={page} total={totalPages} onPage={setPage} />}
+          {totalPages > 1 && <Pagination page={page} total={totalPages} onPageChange={setPage} />}
         </>
       )}
     </div>
