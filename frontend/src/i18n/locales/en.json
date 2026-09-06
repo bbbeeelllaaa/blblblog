@@ -124,7 +124,8 @@
     "life": "Life",
     "uncategorized": "Uncategorized",
     "label": "Category",
-    "selectPlaceholder": "Select category"
+    "selectPlaceholder": "Select category",
+    "empty": "This category is empty"
   },
   "comment": {
     "comments": "Comments ({{total}})",

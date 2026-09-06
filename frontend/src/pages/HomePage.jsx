@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { articleAPI } from '../services/api';
 import ArticleCard from '../components/ArticleCard';
@@ -7,14 +7,14 @@ import Pagination from '../components/Pagination';
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [articles, setArticles] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const params = new URLSearchParams(window.location.search);
-  const tag = params.get('tag');
-  const category = params.get('category') || 'life';
+  const tag = searchParams.get('tag');
+  const category = searchParams.get('category') || 'life';
 
   const categories = [
     { key: 'tech', label: t('category.tech') },
@@ -24,19 +24,27 @@ export default function HomePage() {
 
   const totalPages = Math.ceil(total / 20);
 
-  const loadArticles = async () => {
-    setLoading(true);
-    try {
-      const res = await articleAPI.list({ page, size: 20, tag, category });
-      setArticles(res.data.items);
-      setTotal(res.data.total);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 切换分类/标签时回到第一页
+  useEffect(() => {
+    setPage(1);
+  }, [tag, category]);
 
   useEffect(() => {
-    loadArticles();
+    let active = true;
+    setLoading(true);
+    articleAPI
+      .list({ page, size: 20, tag, category })
+      .then((res) => {
+        if (!active) return;
+        setArticles(res.data.items);
+        setTotal(res.data.total);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [page, tag, category]);
 
   return (
@@ -97,8 +105,9 @@ export default function HomePage() {
         </div>
       ) : articles.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-400 text-lg">{t('article.noArticles')}</p>
-          <p className="text-gray-400 text-sm mt-1">{t('article.beFirst')}</p>
+          <p className="text-gray-400 text-lg">
+            {tag ? t('article.noArticles') : t('category.empty')}
+          </p>
         </div>
       ) : (
         <div className="space-y-5">
