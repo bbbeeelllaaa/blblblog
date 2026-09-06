@@ -14,10 +14,9 @@ export default function HomePage() {
 
   const params = new URLSearchParams(window.location.search);
   const tag = params.get('tag');
-  const category = params.get('category');
+  const category = params.get('category') || 'life';
 
   const categories = [
-    { key: null, label: t('category.all') },
     { key: 'tech', label: t('category.tech') },
     { key: 'study', label: t('category.study') },
     { key: 'life', label: t('category.life') },
@@ -43,9 +42,20 @@ export default function HomePage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {tag ? t('article.tagFilter', { tag }) : t('article.latestArticles')}
-        </h1>
+        {tag ? (
+          <h1 className="text-3xl font-bold text-gray-900">
+            {t('article.tagFilter', { tag })}
+          </h1>
+        ) : (
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 leading-snug">
+              The wheel turns, nothing is ever new.
+            </h1>
+            <p className="text-gray-500 mt-1 italic">
+              — Sherlock Holmes
+            </p>
+          </div>
+        )}
         <p className="text-gray-500 mt-1">
           {total} {t('article.published')}
         </p>
@@ -53,11 +63,11 @@ export default function HomePage() {
 
       <div className="flex flex-wrap gap-2 mb-6">
         {categories.map((c) => {
-          const active = category === c.key || (c.key === null && !category);
+          const active = category === c.key;
           return (
             <Link
-              key={c.key ?? 'all'}
-              to={c.key ? `/?category=${c.key}` : '/'}
+              key={c.key}
+              to={`/?category=${c.key}`}
               className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
                 active ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}

@@ -71,7 +71,6 @@
     "invalidLinkDesc": "This password reset link is missing a token. Please use the link from your email."
   },
   "article": {
-    "latestArticles": "Latest Articles",
     "tagFilter": "Tag: {{tag}}",
     "published": "published",
     "noArticles": "No articles yet.",
@@ -120,7 +119,6 @@
     "failedToPublish": "Failed to publish"
   },
   "category": {
-    "all": "All",
     "tech": "Tech Exploration",
     "study": "Learning Log",
     "life": "Life",

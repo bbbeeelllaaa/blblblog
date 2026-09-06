@@ -71,7 +71,6 @@
     "invalidLinkDesc": "此重置链接缺少令牌。请使用邮件中的链接。"
   },
   "article": {
-    "latestArticles": "最新文章",
     "tagFilter": "标签: {{tag}}",
     "published": "篇已发布",
     "noArticles": "还没有文章。",
@@ -120,7 +119,6 @@
     "failedToPublish": "发布失败"
   },
   "category": {
-    "all": "全部",
     "tech": "技术探索",
     "study": "学习追踪",
     "life": "生活琐事",
