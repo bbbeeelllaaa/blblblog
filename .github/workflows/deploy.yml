@@ -21,6 +21,8 @@ jobs:
         run: |
           docker save blblblog-backend:latest -o backend.tar
           docker save blblblog-frontend:latest -o frontend.tar
+          sudo chmod 644 backend.tar frontend.tar
+          ls -la backend.tar frontend.tar
 
       - name: Copy tarballs to server
         uses: appleboy/scp-action@v0.1.7
