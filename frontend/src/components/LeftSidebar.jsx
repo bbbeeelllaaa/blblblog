@@ -70,10 +70,8 @@ export default function LeftSidebar() {
     return <aside className="text-sm text-gray-400 py-8">{t('sidebar.noContent')}</aside>;
   }
 
-  const { owner, tags = [] } = sidebar;
+  const { owner } = sidebar;
   const cards = parseJsonArray(owner.featured_cards);
-  const params = new URLSearchParams(window.location.search);
-  const currentTag = params.get('tag');
 
   // Rotate card colors: warm → rose → brand → repeat
   const cardColors = [
@@ -262,35 +260,6 @@ export default function LeftSidebar() {
         )}
       </section>
 
-      {/* Tags */}
-      {tags.length > 0 && (
-        <section className="sidebar-card">
-          <h3 className="text-sm font-semibold text-gray-800 mb-3">{t('sidebar.tags')}</h3>
-          {tags.map((group, gi) => (
-            <div key={gi} className="mb-3 last:mb-0">
-              {group.category && (
-                <div className="text-xs text-gray-400 font-medium mb-1.5">{group.category}</div>
-              )}
-              <div className="flex flex-wrap gap-1.5">
-                {group.tags.map((tag) => (
-                  <Link
-                    key={tag.id}
-                    to={`/?tag=${tag.name}`}
-                    className={`inline-block text-xs px-2.5 py-1 rounded-full transition-colors ${
-                      currentTag === tag.name
-                        ? 'bg-brand text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {tag.name}
-                    <span className="ml-1 opacity-50">{tag.count}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
-      )}
     </aside>
   );
 }

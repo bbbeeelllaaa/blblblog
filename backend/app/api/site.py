@@ -3,8 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
-from app.models.article import ArticleTag, article_tag_association
-from sqlalchemy import select, func
+from sqlalchemy import select
 
 router = APIRouter(prefix="/site", tags=["site"])
 
@@ -31,39 +30,7 @@ async def get_sidebar_data(db: AsyncSession = Depends(get_db)):
             "featured_cards": owner.featured_cards,
         }
 
-    # Tags grouped by category
-    tags_result = await db.execute(
-        select(ArticleTag).order_by(ArticleTag.category.nulls_last(), ArticleTag.name)
-    )
-    all_tags = tags_result.scalars().all()
-
-    # Count articles per tag
-    tag_counts = {}
-    if all_tags:
-        count_result = await db.execute(
-            select(ArticleTag.id, func.count(article_tag_association.c.article_id))
-            .outerjoin(article_tag_association)
-            .group_by(ArticleTag.id)
-        )
-        tag_counts = dict(count_result.all())
-
-    categories = {}
-    uncategorized = []
-    for tag in all_tags:
-        item = {"id": tag.id, "name": tag.name, "count": tag_counts.get(tag.id, 0)}
-        if tag.category:
-            categories.setdefault(tag.category, []).append(item)
-        else:
-            uncategorized.append(item)
-
-    tag_data = [{"category": k, "tags": v} for k, v in categories.items()]
-    if uncategorized:
-        tag_data.append({"category": None, "tags": uncategorized})
-
-    return {
-        "owner": owner_data,
-        "tags": tag_data,
-    }
+    return {"owner": owner_data}
 
 
 @router.put("/owner")
