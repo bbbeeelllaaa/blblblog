@@ -39,6 +39,7 @@ async def list_favorites(
             "author_id": article.author_id,
             "author_name": article.author.username if article.author else "Unknown",
             "author_avatar": article.author.avatar if article.author else None,
+            "category": article.category,
             "tags": [{"id": t.id, "name": t.name} for t in (article.tags or [])],
             "view_count": article.view_count,
             "like_count": await get_article_like_count(db, article.id),

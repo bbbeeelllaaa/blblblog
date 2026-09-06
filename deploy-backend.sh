@@ -70,6 +70,9 @@ docker run -d \
   -e SMTP_FROM="${SMTP_FROM:-}" \
   blblblog-backend:latest
 
-echo ">>> Step 5: Verify"
+echo ">>> Step 5: Run database migrations"
 sleep 3
+docker exec blblblog-backend alembic upgrade head
+
+echo ">>> Step 6: Verify"
 curl -s http://localhost/api/health && echo "" && echo ">>> Deploy OK!" || echo ">>> WARNING: Health check failed, check logs with: docker logs blblblog-backend"

@@ -15,6 +15,7 @@ export default function CreateArticlePage() {
   const [content, setContent] = useState('');
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState([]);
+  const [category, setCategory] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
@@ -111,6 +112,10 @@ export default function CreateArticlePage() {
     navigate('/login');
     return null;
   }
+  if (!user.is_admin) {
+    navigate('/');
+    return null;
+  }
 
   const handleSubmit = async (e, isDraft = false) => {
     e.preventDefault();
@@ -122,6 +127,7 @@ export default function CreateArticlePage() {
         content: content.trim(),
         summary: summary.trim() || null,
         tags: tags,
+        category: category,
         is_published: !isDraft,
       });
       toast.success(isDraft ? t('article.draftSaved') : t('article.articlePublished'));
@@ -141,6 +147,12 @@ export default function CreateArticlePage() {
           placeholder={t('article.titlePlaceholder')} className="input-field text-lg font-medium" required />
         <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)}
           placeholder={t('article.summaryPlaceholder')} className="input-field" />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-field" required>
+          <option value="" disabled>{t('category.selectPlaceholder')}</option>
+          <option value="tech">{t('category.tech')}</option>
+          <option value="study">{t('category.study')}</option>
+          <option value="life">{t('category.life')}</option>
+        </select>
         <TagInput value={tags} onChange={setTags} placeholder={t('article.tagsPlaceholder')} />
         <input type="file" ref={fileRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
         <div data-color-mode="light">

@@ -1,5 +1,8 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Literal
+
+Category = Literal["tech", "study", "life"]
 
 
 class TagCreate(BaseModel):
@@ -18,6 +21,7 @@ class ArticleCreate(BaseModel):
     content: str = Field(min_length=1)
     summary: str | None = None
     tags: list[str] = []
+    category: Category
     is_published: bool = True
 
 
@@ -26,6 +30,7 @@ class ArticleUpdate(BaseModel):
     content: str | None = None
     summary: str | None = None
     tags: list[str] | None = None
+    category: Category | None = None
     is_published: bool | None = None
 
 
@@ -36,6 +41,7 @@ class ArticleListResponse(BaseModel):
     author_id: int
     author_name: str
     author_avatar: str | None
+    category: str | None = None
     tags: list[TagResponse]
     view_count: int
     like_count: int = 0
@@ -55,6 +61,7 @@ class ArticleDetailResponse(BaseModel):
     author_id: int
     author_name: str
     author_avatar: str | None
+    category: str | None = None
     tags: list[TagResponse]
     view_count: int
     like_count: int = 0

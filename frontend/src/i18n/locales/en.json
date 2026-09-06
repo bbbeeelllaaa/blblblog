@@ -80,16 +80,11 @@
     "views": "{{count}} views",
     "online": "{{count}} online",
     "uniqueReaders": "{{count}} unique readers",
-    "aiSummary": "AI Summary",
-    "generatingSummary": "Generating summary...",
-    "aiSummaryLabel": "AI Summary ({{method}})",
-    "dismiss": "Dismiss",
     "addedToFavorites": "Added to favorites",
     "removedFromFavorites": "Removed from favorites",
     "favorited": "Favorited",
     "favorite": "Favorite",
     "notFound": "Article not found",
-    "summaryFailed": "Failed to generate summary",
     "byline": "{{name}} · {{count}} views",
     "published_date": "Published {{date}}",
     "edit": "Edit Article",
@@ -123,6 +118,15 @@
     "noArticlesUser": "No articles yet",
     "articlePublishedToast": "Article published!",
     "failedToPublish": "Failed to publish"
+  },
+  "category": {
+    "all": "All",
+    "tech": "Tech Exploration",
+    "study": "Learning Log",
+    "life": "Life",
+    "uncategorized": "Uncategorized",
+    "label": "Category",
+    "selectPlaceholder": "Select category"
   },
   "comment": {
     "comments": "Comments ({{total}})",

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Avatar from './Avatar';
 
 // Left accent border colors cycling through the morandi palette
@@ -10,6 +11,7 @@ const BG_STYLES = [
 ];
 
 export default function ArticleCard({ article, index = 0, hero = false }) {
+  const { t } = useTranslation();
   const date = new Date(article.created_at).toLocaleString('zh-CN', {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
@@ -45,6 +47,11 @@ export default function ArticleCard({ article, index = 0, hero = false }) {
 
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex gap-2 flex-wrap">
+            {article.category && (
+              <span className="text-xs bg-warm/15 text-warm px-2.5 py-1 rounded-full border border-warm/30">
+                {t(`category.${article.category}`)}
+              </span>
+            )}
             {article.tags?.map((tag) => (
               <Link
                 key={tag.id}
@@ -103,6 +110,11 @@ export default function ArticleCard({ article, index = 0, hero = false }) {
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-1.5 flex-wrap">
+          {article.category && (
+            <span className="text-xs bg-warm/15 text-warm px-2 py-0.5 rounded-full border border-warm/30">
+              {t(`category.${article.category}`)}
+            </span>
+          )}
           {article.tags?.map((tag) => (
             <Link
               key={tag.id}

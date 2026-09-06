@@ -4,16 +4,18 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 
 ## Features
 
+- **Single-author blog**: only admins can publish articles. Regular users can comment on articles and post in the guestbook; their profile pages remain.
+- **Article categories (分区)**: three built-in sections — 技术探索 (tech), 学习追踪 (study), 生活琐事 (life) — stored as stable slugs so display names can be renamed later without a migration.
 - **User System**: Register, login (JWT), profile management with avatar upload
-- **Blog Articles**: Markdown editor with live preview, image upload, tags/categories, pagination
+- **Blog Articles**: Markdown editor with live preview, image upload, tags, pagination
 - **Comments**: Nested replies (threaded comments), Markdown support
+- **Guestbook (留言板)**: logged-in users leave messages
 - **Likes**: Like/unlike articles and comments, real-time count via Redis
 - **Favorites**: Bookmark articles, view favorites in personal center
 - **Admin Panel**: Manage users, articles, comments; dashboard statistics; role-based access control
-- **User Tracking**: Login time, login count, articles published, likes received per user
+- **User Tracking**: Login time, login count, likes received per user
 - **Hybrid Search**: Full-text search (PostgreSQL tsvector) + Semantic search (pgvector), Chinese word segmentation via jieba
 - **Online Stats**: Real-time UV/PV tracking using Redis HyperLogLog
-- **AI Summary**: Generate article summaries via OpenAI API (with TextRank fallback)
 - **Responsive Design**: Mobile-first, works on phones and desktops
 - **API Documentation**: Auto-generated Swagger UI at `/docs`
 
@@ -28,7 +30,7 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 | Auth | JWT + bcrypt |
 | Search | tsvector (full-text) + pgvector (semantic) + jieba (Chinese segmentation) |
 | Proxy | Nginx (reverse proxy + static file serving) |
-| CI/CD | GitHub Actions + Docker Hub |
+| CI/CD | GitHub Actions (build → ship tarball → SSH deploy) |
 
 ## Project Structure
 
@@ -67,7 +69,7 @@ blblblog/
 ### Prerequisites
 
 - Docker & Docker Compose v2
-- (Optional) OpenAI API key for AI features
+- (Optional) OpenAI-compatible API key for semantic search embeddings
 
 ### One-command start
 
@@ -148,9 +150,9 @@ Copy `.env.example` to `.env` and configure:
 | `JWT_SECRET_KEY` | Secret key for JWT signing | (required, change me) |
 | `JWT_EXPIRE_MINUTES` | Token expiry time | `60` |
 | `REDIS_URL` | Redis connection string | `redis://localhost:6379/0` |
-| `AI_API_KEY` | OpenAI API key (optional) | (empty = fallback to TextRank) |
+| `AI_API_KEY` | OpenAI-compatible API key for semantic search embeddings (optional) | (empty = full-text search only) |
 | `AI_API_BASE` | OpenAI-compatible API base URL | `https://api.openai.com/v1` |
-| `AI_MODEL` | Model for AI summary | `gpt-4o-mini` |
+| `AI_MODEL` | Embedding model for semantic search | `gpt-4o-mini` |
 | `NGINX_PORT` | Nginx public port (docker) | `8080` |
 
 ## API Documentation
@@ -167,10 +169,11 @@ Once the backend is running, visit:
 | POST | `/auth/register` | No | Register new user |
 | POST | `/auth/login` | No | Login, get JWT |
 | GET | `/auth/me` | Yes | Get current user |
-| GET | `/articles` | No | List articles (paginated) |
-| POST | `/articles` | Yes | Create article |
+| GET | `/articles` | No | List articles (paginated, optional `?category=tech\|study\|life`) |
+| POST | `/articles` | Admin | Create article (requires `category`) |
 | GET | `/articles/{id}` | No | Get article detail |
-| GET | `/articles/{id}/summary` | No | AI summary |
+| PUT | `/articles/{id}` | Admin | Update article |
+| DELETE | `/articles/{id}` | Admin | Delete article |
 | GET | `/articles/{id}/comments` | No | List comments |
 | POST | `/articles/{id}/comments` | Yes | Post comment |
 | POST | `/likes/articles/{id}` | Yes | Toggle article like |
@@ -203,23 +206,20 @@ Admin users can access the admin panel via the "Admin" link in the navigation ba
 
 Pushing to the `main` branch triggers `.github/workflows/deploy.yml`:
 
-1. Builds backend and frontend Docker images
-2. Pushes images to Docker Hub
-3. SSH into server, pulls latest images, and runs `docker compose up -d`
+1. Builds the backend and frontend Docker images
+2. Saves them as `backend.tar` / `frontend.tar`
+3. Copies the tarballs to the server via SCP
+4. SSHes in and runs `deploy-backend.sh` + `deploy-frontend.sh` (which `docker load` and restart the containers), then applies Alembic migrations
 
 ### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
-| `DOCKER_HUB_USERNAME` | Docker Hub username |
-| `DOCKER_HUB_TOKEN` | Docker Hub access token |
-| `SERVER_HOST` | Server IP or hostname |
-| `SERVER_USER` | SSH username |
-| `SERVER_SSH_KEY` | SSH private key |
-| `JWT_SECRET_KEY` | JWT signing secret |
-| `AI_API_KEY` | OpenAI API key (optional) |
-| `AI_API_BASE` | API base URL |
-| `AI_MODEL` | Model name |
+| `SSH_HOST` | Server IP or hostname (e.g. `121.199.173.53`) |
+| `SSH_USER` | SSH username (e.g. `root`) |
+| `SSH_KEY` | Private SSH key for the deploy user (public key must be in the server's `~/.ssh/authorized_keys`) |
+
+The server also needs `/root/blblblog/.env` (copy of `.env.example` with real values). It is **not** committed or sent by CI — it must already exist on the server.
 
 ## Advanced Features
 
@@ -230,10 +230,6 @@ Combines PostgreSQL full-text search (`tsvector` with GIN index) and vector simi
 ### Online User Counting
 
 Uses Redis with HyperLogLog (UV) and time-windowed keys (PV) for memory-efficient real-time statistics. Online users are tracked via expiring keys with 5-minute TTL.
-
-### AI Article Summary
-
-Click the "AI Summary" button on any article page. Uses OpenAI API if configured, otherwise falls back to extractive summarization (TextRank-like algorithm).
 
 ## License
 

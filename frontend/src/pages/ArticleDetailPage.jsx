@@ -16,8 +16,6 @@ export default function ArticleDetailPage() {
   const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [summary, setSummary] = useState(null);
-  const [summaryLoading, setSummaryLoading] = useState(false);
   const [onlineStats, setOnlineStats] = useState(null);
   const [commentRefresh, setCommentRefresh] = useState(0);
 
@@ -68,15 +66,6 @@ export default function ArticleDetailPage() {
     } catch { toast.error(t('common.failed')); }
   };
 
-  const handleAISummary = async () => {
-    setSummaryLoading(true);
-    try {
-      const res = await articleAPI.getSummary(id);
-      setSummary(res.data);
-    } catch { toast.error(t('article.summaryFailed')); }
-    finally { setSummaryLoading(false); }
-  };
-
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto animate-pulse">
@@ -120,6 +109,12 @@ export default function ArticleDetailPage() {
         )}
       </h1>
 
+      {article.category && (
+        <span className="inline-block text-xs bg-warm/15 text-warm px-3 py-1 rounded-full border border-warm/30 mb-4">
+          {t(`category.${article.category}`)}
+        </span>
+      )}
+
       {/* Author & Meta */}
       <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
         <Link to={`/users/${article.author_id}`} className="flex items-center gap-2">
@@ -152,36 +147,6 @@ export default function ArticleDetailPage() {
           ))}
         </div>
       )}
-
-      {/* AI Summary */}
-      <div className="mb-6">
-        {!summary ? (
-          <button onClick={handleAISummary} disabled={summaryLoading}
-            className="text-sm text-brand hover:text-brand-hover flex items-center gap-1">
-            {summaryLoading ? (
-              t('article.generatingSummary')
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                {t('article.aiSummary')}
-              </>
-            )}
-          </button>
-        ) : (
-          <div className="bg-brand/10 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-brand font-medium">
-                {t('article.aiSummaryLabel', { method: summary.method === 'ai' ? 'GPT' : 'Extractive' })}
-              </span>
-              <button onClick={() => setSummary(null)} className="text-xs text-gray-400 hover:text-gray-600">{t('article.dismiss')}</button>
-            </div>
-            <p className="text-sm text-gray-700">{summary.summary}</p>
-          </div>
-        )}
-      </div>
 
       {/* Actions */}
       <div className="flex items-center gap-4 mb-8">

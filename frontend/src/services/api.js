@@ -68,7 +68,6 @@ export const articleAPI = {
   create: (data) => api.post('/articles', data),
   update: (id, data) => api.put(`/articles/${id}`, data),
   delete: (id) => api.delete(`/articles/${id}`),
-  getSummary: (id) => api.get(`/articles/${id}/summary`),
 };
 
 // Comments

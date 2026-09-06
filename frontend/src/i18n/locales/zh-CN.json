@@ -80,16 +80,11 @@
     "views": "{{count}} 次阅读",
     "online": "{{count}} 人在线",
     "uniqueReaders": "{{count}} 位读者",
-    "aiSummary": "AI 摘要",
-    "generatingSummary": "生成摘要中...",
-    "aiSummaryLabel": "AI 摘要 ({{method}})",
-    "dismiss": "关闭",
     "addedToFavorites": "已加入收藏",
     "removedFromFavorites": "已取消收藏",
     "favorited": "已收藏",
     "favorite": "收藏",
     "notFound": "文章未找到",
-    "summaryFailed": "生成摘要失败",
     "byline": "{{name}} · {{count}} 次阅读",
     "published_date": "发布于 {{date}}",
     "edit": "编辑文章",
@@ -123,6 +118,15 @@
     "noArticlesUser": "还没有文章",
     "articlePublishedToast": "文章已发布！",
     "failedToPublish": "发布失败"
+  },
+  "category": {
+    "all": "全部",
+    "tech": "技术探索",
+    "study": "学习追踪",
+    "life": "生活琐事",
+    "uncategorized": "未分类",
+    "label": "分类",
+    "selectPlaceholder": "选择分类"
   },
   "comment": {
     "comments": "评论 ({{total}})",

@@ -1,4 +1,4 @@
-﻿name: Deploy to Server
+name: Deploy to Server
 
 on:
   push:
@@ -8,7 +8,30 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t blblblog-backend:latest ./backend
+
+      - name: Build frontend image
+        run: docker build -t blblblog-frontend:latest ./frontend
+
+      - name: Save images to tarballs
+        run: |
+          docker save blblblog-backend:latest -o backend.tar
+          docker save blblblog-frontend:latest -o frontend.tar
+
+      - name: Copy tarballs to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "backend.tar,frontend.tar"
+          target: /root/blblblog/
+
+      - name: Deploy on server
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -16,9 +39,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /root/blblblog
-            git fetch origin main
-            git reset --hard origin/main
-            docker build -t blblblog-backend:latest ./backend
-            docker build -t blblblog-frontend:latest ./frontend
-            docker compose -f docker-compose.prod.yml up -d
+            bash deploy-backend.sh
+            bash deploy-frontend.sh
             echo "Deploy complete at $(date)"

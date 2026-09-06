@@ -16,6 +16,7 @@ export default function EditArticlePage() {
   const [content, setContent] = useState('');
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState([]);
+  const [category, setCategory] = useState('');
   const [saving, setSaving] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -118,15 +119,11 @@ export default function EditArticlePage() {
     try {
       const res = await articleAPI.get(id);
       const a = res.data;
-      if (user && a.author_id !== user.id) {
-        toast.error(t('article.notAuthorized'));
-        navigate('/');
-        return;
-      }
       setTitle(a.title);
       setContent(a.content);
       setSummary(a.summary || '');
       setTags(a.tags?.map((t) => t.name) || []);
+      setCategory(a.category || '');
       setIsDraft(!a.is_published);
     } finally {
       setLoading(false);
@@ -142,6 +139,7 @@ export default function EditArticlePage() {
         content: content.trim(),
         summary: summary.trim() || null,
         tags: tags,
+        category: category,
       };
       if (publishStatus !== null) {
         data.is_published = publishStatus;
@@ -158,6 +156,11 @@ export default function EditArticlePage() {
 
   if (loading) return <div className="text-center py-16 text-gray-400">{t('common.loading')}</div>;
 
+  if (!user?.is_admin) {
+    navigate('/');
+    return null;
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">{t('article.editArticle')}</h1>
@@ -166,6 +169,12 @@ export default function EditArticlePage() {
           placeholder={t('article.titlePlaceholder')} className="input-field text-lg font-medium" required />
         <input type="text" value={summary} onChange={(e) => setSummary(e.target.value)}
           placeholder={t('article.summaryPlaceholder')} className="input-field" />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-field" required>
+          <option value="" disabled>{t('category.selectPlaceholder')}</option>
+          <option value="tech">{t('category.tech')}</option>
+          <option value="study">{t('category.study')}</option>
+          <option value="life">{t('category.life')}</option>
+        </select>
         <TagInput value={tags} onChange={setTags} placeholder={t('article.tagsPlaceholder')} />
         <input type="file" ref={fileRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
         <div data-color-mode="light">

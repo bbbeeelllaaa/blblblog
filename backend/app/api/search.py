@@ -26,6 +26,7 @@ async def search_articles(
             "author_id": a.author_id,
             "author_name": a.author.username if a.author else "Unknown",
             "author_avatar": a.author.avatar if a.author else None,
+            "category": a.category,
             "tags": [{"id": t.id, "name": t.name} for t in (a.tags or [])],
             "like_count": await get_article_like_count(db, a.id),
             "comment_count": await get_article_comment_count(db, a.id),

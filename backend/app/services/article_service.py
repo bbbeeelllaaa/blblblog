@@ -40,6 +40,7 @@ async def get_articles(
     tag: str | None = None,
     author_id: int | None = None,
     published_only: bool = True,
+    category: str | None = None,
 ) -> tuple[list[Article], int]:
     query = select(Article)
     count_query = select(func.count(Article.id))
@@ -51,6 +52,10 @@ async def get_articles(
     if tag:
         query = query.join(article_tag_association).join(ArticleTag).where(ArticleTag.name == tag)
         count_query = count_query.join(article_tag_association).join(ArticleTag).where(ArticleTag.name == tag)
+
+    if category:
+        query = query.where(Article.category == category)
+        count_query = count_query.where(Article.category == category)
 
     if author_id:
         query = query.where(Article.author_id == author_id)
