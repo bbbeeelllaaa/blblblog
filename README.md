@@ -7,7 +7,7 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 - **Single-author blog**: only admins can publish articles. Regular users can comment on articles and post in the guestbook; their profile pages remain.
 - **Article categories (分区)**: three built-in sections — 技术探索 (tech), 学习追踪 (study), 生活琐事 (life) — stored as stable slugs so display names can be renamed later without a migration.
 - **User System**: Register, login (JWT), profile management with avatar upload
-- **Blog Articles**: Markdown editor with live preview, image upload, tags, pagination
+- **Blog Articles**: Visual Markdown editor with source mode, image upload, downloadable file attachments, tags, pagination
 - **Comments**: Nested replies (threaded comments), Markdown support
 - **Guestbook (留言板)**: logged-in users leave messages
 - **Likes**: Like/unlike articles and comments, real-time count via Redis

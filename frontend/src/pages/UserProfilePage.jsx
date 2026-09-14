@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { userAPI, articleAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import ArticleCard from '../components/ArticleCard';
-import Pagination from '../components/Pagination';
 import Avatar from '../components/Avatar';
 import { formatDate, formatDateTime } from '../utils/dateFormat';
 import toast from 'react-hot-toast';
@@ -19,33 +18,36 @@ export default function UserProfilePage() {
   const [drafts, setDrafts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isSelf = user && profile && user.id === profile.id;
+  const isSelf = user && profile && String(profile.id) === id && user.id === profile.id;
 
   useEffect(() => {
     loadProfile();
-    loadArticles();
   }, [id]);
 
   useEffect(() => {
-    if (isSelf) {
+    if (isSelf && profile.is_admin) {
       loadDrafts();
     }
-  }, [isSelf, id]);
+  }, [isSelf, id, profile?.is_admin]);
 
   const loadProfile = async () => {
+    setLoading(true);
+    setProfile(null);
+    setArticles([]);
+    setDrafts([]);
     try {
       const res = await userAPI.getUser(id);
       setProfile(res.data);
+      if (res.data.is_admin) await loadArticles();
     } catch { /* ignore */ }
+    finally {
+      setLoading(false);
+    }
   };
 
   const loadArticles = async () => {
-    try {
-      const res = await articleAPI.list({ author_id: id, page: 1, size: 50 });
-      setArticles(res.data.items);
-    } finally {
-      setLoading(false);
-    }
+    const res = await articleAPI.list({ author_id: id, page: 1, size: 50 });
+    setArticles(res.data.items);
   };
 
   const loadDrafts = async () => {
@@ -104,8 +106,8 @@ export default function UserProfilePage() {
         )}
       </div>
 
-      {/* Drafts section - only visible to self */}
-      {isSelf && drafts.length > 0 && (
+      {/* Drafts section - only visible to the admin viewing their own profile */}
+      {isSelf && profile?.is_admin && drafts.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             {t('article.drafts')}
@@ -142,15 +144,19 @@ export default function UserProfilePage() {
         </div>
       )}
 
-      <h2 className="text-xl font-semibold mb-4">{t('article.articlesCount', { count: articles.length })}</h2>
-      {loading ? (
-        <div className="text-center py-8 text-gray-400">{t('common.loading')}</div>
-      ) : articles.length === 0 ? (
-        <div className="text-center py-8 text-gray-400">{t('article.noArticlesUser')}</div>
-      ) : (
-        <div className="space-y-4">
-          {articles.map((a, i) => <ArticleCard key={a.id} article={a} index={i} />)}
-        </div>
+      {profile?.is_admin && (
+        <>
+          <h2 className="text-xl font-semibold mb-4">{t('article.articlesCount', { count: articles.length })}</h2>
+          {loading ? (
+            <div className="text-center py-8 text-gray-400">{t('common.loading')}</div>
+          ) : articles.length === 0 ? (
+            <div className="text-center py-8 text-gray-400">{t('article.noArticlesUser')}</div>
+          ) : (
+            <div className="space-y-4">
+              {articles.map((a, i) => <ArticleCard key={a.id} article={a} index={i} />)}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

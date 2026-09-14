@@ -37,3 +37,7 @@ postgres_data/
 
 *.tar
 *.tar.gz
+
+# Browser verification artifacts
+.playwright-cli/
+output/playwright/

@@ -35,7 +35,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      if (window.location.pathname !== '/login') {
+      // An expired session should fall back to guest browsing during startup.
+      if (error.config?.url !== '/auth/me' && window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
     }

@@ -165,9 +165,9 @@
     "username": "用户名",
     "bio": "简介",
     "bioPlaceholder": "介绍一下自己...",
-    "interests": "兴趣",
+    "interests": "兴趣: ",
     "interestsPlaceholder": "例如：Python\nReact\n机器学习",
-    "experience": "经历",
+    "experience": "经历: ",
     "experiencePlaceholder": "你的工作经历...",
     "saveProfile": "保存资料",
     "saving": "保存中...",
@@ -178,9 +178,7 @@
     "avatarUpdated": "头像已更新！",
     "failedToUploadAvatar": "上传头像失败",
     "userNotFound": "用户未找到",
-    "joined": "注册于 {{date}}",
-    "interests": "兴趣: ",
-    "experience": "经历: "
+    "joined": "注册于 {{date}}"
   },
   "search": {
     "searchArticles": "搜索文章...",
@@ -269,5 +267,110 @@
   },
   "footer": {
     "text": "© {{year}} blblblog. 使用 FastAPI & React 构建。"
+  },
+  "editor": {
+    "label": "文章正文",
+    "hint": "直接输入内容，选中文字即可排版；也支持 Markdown 快捷输入。",
+    "characters": "{{count}} 字符",
+    "placeholder": "从这里开始，写下你的想法…",
+    "attachFile": "上传附件",
+    "fileUploaded": "附件已插入正文",
+    "uploading": "正在上传，请稍候再发布…",
+    "attachmentHint": "支持 PDF、Word、Excel、PPT、文本和压缩包，单个附件默认上限 5 MB。",
+    "ui": {
+      "toolbar": {
+        "undo": "撤销 {{shortcut}}",
+        "redo": "重做 {{shortcut}}",
+        "bold": "加粗",
+        "removeBold": "取消加粗",
+        "italic": "斜体",
+        "removeItalic": "取消斜体",
+        "inlineCode": "行内代码",
+        "removeInlineCode": "取消代码格式",
+        "bulletedList": "无序列表",
+        "numberedList": "有序列表",
+        "checkList": "任务列表",
+        "link": "插入链接",
+        "image": "插入图片",
+        "table": "插入表格",
+        "codeBlock": "插入代码块",
+        "richText": "可视化编辑",
+        "source": "Markdown 源码",
+        "toggleGroup": "格式选项",
+        "blockTypes": {
+          "paragraph": "正文",
+          "quote": "引用",
+          "heading": "{{level}} 级标题"
+        },
+        "blockTypeSelect": {
+          "selectBlockTypeTooltip": "段落格式",
+          "placeholder": "段落格式"
+        }
+      },
+      "dialog": {
+        "close": "关闭",
+        "save": "保存",
+        "cancel": "取消"
+      },
+      "codeBlock": {
+        "language": "代码语言",
+        "selectLanguage": "选择代码语言",
+        "inlineLanguage": "语言"
+      },
+      "imageEditor": {
+        "editImage": "编辑图片",
+        "deleteImage": "删除图片"
+      },
+      "dialogControls": {
+        "save": "保存",
+        "cancel": "取消"
+      },
+      "uploadImage": {
+        "dialogTitle": "插入图片",
+        "uploadInstructions": "从设备选择图片：",
+        "addViaUrlInstructions": "或粘贴图片地址：",
+        "addViaUrlInstructionsNoUpload": "图片地址：",
+        "autoCompletePlaceholder": "选择或粘贴图片地址",
+        "alt": "图片描述：",
+        "title": "图片标题：",
+        "width": "宽度：",
+        "height": "高度："
+      },
+      "createLink": {
+        "url": "链接地址",
+        "urlPlaceholder": "选择或粘贴链接",
+        "text": "显示文字",
+        "textTooltip": "链接在正文中显示的文字",
+        "title": "链接标题",
+        "titleTooltip": "鼠标悬停时显示的标题",
+        "saveTooltip": "保存链接",
+        "cancelTooltip": "取消修改"
+      },
+      "linkPreview": {
+        "edit": "编辑链接",
+        "copyToClipboard": "复制链接",
+        "copied": "已复制",
+        "remove": "移除链接",
+        "open": "在新窗口打开 {{url}}"
+      },
+      "table": {
+        "alignCenter": "居中",
+        "alignLeft": "左对齐",
+        "alignRight": "右对齐",
+        "columnMenu": "列操作",
+        "rowMenu": "行操作",
+        "deleteColumn": "删除这一列",
+        "deleteRow": "删除这一行",
+        "deleteTable": "删除表格",
+        "insertColumnLeft": "向左插入一列",
+        "insertColumnRight": "向右插入一列",
+        "insertRowAbove": "向上插入一行",
+        "insertRowBelow": "向下插入一行",
+        "textAlignment": "文字对齐"
+      },
+      "codeblock": {
+        "delete": "删除代码块"
+      }
+    }
   }
 }

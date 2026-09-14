@@ -165,9 +165,9 @@
     "username": "Username",
     "bio": "Bio",
     "bioPlaceholder": "Tell us about yourself...",
-    "interests": "Interests",
+    "interests": "Interests: ",
     "interestsPlaceholder": "e.g. Python\nReact\nMachine Learning",
-    "experience": "Experience",
+    "experience": "Experience: ",
     "experiencePlaceholder": "Your work experience...",
     "saveProfile": "Save Profile",
     "saving": "Saving...",
@@ -178,9 +178,7 @@
     "avatarUpdated": "Avatar updated!",
     "failedToUploadAvatar": "Failed to upload avatar",
     "userNotFound": "User not found",
-    "joined": "Joined {{date}}",
-    "interests": "Interests: ",
-    "experience": "Experience: "
+    "joined": "Joined {{date}}"
   },
   "search": {
     "searchArticles": "Search articles...",
@@ -269,5 +267,15 @@
   },
   "footer": {
     "text": "© {{year}} blblblog. Built with FastAPI & React."
+  },
+  "editor": {
+    "label": "Article content",
+    "hint": "Start writing, select text to format, or use Markdown shortcuts.",
+    "characters": "{{count}} characters",
+    "placeholder": "Start with a thought…",
+    "attachFile": "Attach file",
+    "fileUploaded": "Attachment inserted",
+    "uploading": "Uploading — please wait before publishing…",
+    "attachmentHint": "PDF, Office documents, text and archives. Default attachment limit: 5 MB per file."
   }
 }
