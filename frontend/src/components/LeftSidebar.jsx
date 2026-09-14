@@ -72,6 +72,9 @@ export default function LeftSidebar() {
 
   const { owner } = sidebar;
   const cards = parseJsonArray(owner.featured_cards);
+  const splitTags = (s) => (s || '').split(/[\n\r,，、;；]+/).map((x) => x.trim()).filter(Boolean);
+  const workTags = splitTags(owner.experience);
+  const moodTags = splitTags(owner.interests);
 
   // Rotate card colors: warm → rose → brand → repeat
   const cardColors = [
@@ -85,15 +88,23 @@ export default function LeftSidebar() {
       {/* Owner info */}
       <section className="owner-card">
         <p className="eyebrow">{t('journal.author')}</p>
-        <Link to={`/users/${owner.id}`} className="flex items-center gap-3 mb-2">
-          <Avatar src={owner.avatar} letter={owner.username?.[0]?.toUpperCase()} size="w-12 h-12" />
-          <div>
-            <div className="font-semibold text-gray-900">{owner.username}</div>
-            {!editingBio && (
-              <p className="text-xs text-gray-600 mt-0.5">{owner.bio || t('sidebar.noBio')}</p>
+        <div className="owner-row">
+          <Link to={`/users/${owner.id}`} className="shrink-0">
+            <Avatar src={owner.avatar} letter={owner.username?.[0]?.toUpperCase()} size="w-16 h-16" />
+          </Link>
+          <div className="owner-meta">
+            <Link to={`/users/${owner.id}`} className="owner-name">{owner.username}</Link>
+            {(workTags.length > 0 || moodTags.length > 0) && (
+              <div className="owner-tags">
+                {workTags.map((tag, i) => <span key={`w${i}`} className="owner-tag owner-tag--work">{tag}</span>)}
+                {moodTags.map((tag, i) => <span key={`m${i}`} className="owner-tag owner-tag--mood">{tag}</span>)}
+              </div>
             )}
           </div>
-        </Link>
+        </div>
+        {!editingBio && owner.bio && (
+          <p className="owner-bio">{owner.bio}</p>
+        )}
         {isOwner && !editingBio && (
           <button
             onClick={() => { setBioText(owner.bio || ''); setEditingBio(true); }}

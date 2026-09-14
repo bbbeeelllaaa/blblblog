@@ -29,6 +29,7 @@ function letterFont(size) {
     'w-9': 'text-sm font-medium',
     'w-10': 'text-sm font-medium',
     'w-12': 'text-lg font-medium',
+    'w-16': 'text-xl font-medium',
     'w-20': 'text-2xl font-medium',
     'w-24': 'text-3xl font-medium',
   };
