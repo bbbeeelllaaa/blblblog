@@ -81,9 +81,10 @@ export default function LeftSidebar() {
   ];
 
   return (
-    <aside className="space-y-6 text-sm">
+    <aside className="journal-sidebar space-y-5 text-sm">
       {/* Owner info */}
-      <section>
+      <section className="owner-card">
+        <p className="eyebrow">{t('journal.author')}</p>
         <Link to={`/users/${owner.id}`} className="flex items-center gap-3 mb-2">
           <Avatar src={owner.avatar} letter={owner.username?.[0]?.toUpperCase()} size="w-12 h-12" />
           <div>

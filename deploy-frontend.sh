@@ -3,7 +3,7 @@
 # blblblog Frontend Deploy Script
 # Usage: bash deploy-frontend.sh
 # ============================================
-set -e
+set -eo pipefail
 
 PROJECT_DIR="/root/blblblog"
 
@@ -28,5 +28,13 @@ docker run -d \
   blblblog-frontend:latest
 
 echo ">>> Step 4: Verify"
-sleep 2
-curl -s -o /dev/null -w 'HTTP %{http_code}' http://localhost/ && echo " -> Frontend OK"
+docker exec blblblog-frontend nginx -t
+for attempt in {1..15}; do
+  if docker exec blblblog-frontend wget -q -O /dev/null http://127.0.0.1/; then
+    echo ">>> Frontend healthy"
+    exit 0
+  fi
+  sleep 2
+done
+echo ">>> Frontend health check failed"
+exit 1

@@ -1,13 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import LeftSidebar from './LeftSidebar';
+import HomeHero from './HomeHero';
 import Avatar from './Avatar';
 import toast from 'react-hot-toast';
-
-const scrollCache = {};
-let prevPath = null;
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -17,8 +15,12 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const rightPanelRef = useRef(null);
-  const leftPanelRef = useRef(null);
+  const [effectsEnabled, setEffectsEnabled] = useState(() => localStorage.getItem('ambient-effects') !== 'off');
+
+  const toggleEffects = () => {
+    setEffectsEnabled(!effectsEnabled);
+    localStorage.setItem('ambient-effects', effectsEnabled ? 'off' : 'on');
+  };
 
   const toggleLanguage = () => {
     const next = i18n.language === 'zh-CN' ? 'en' : 'zh-CN';
@@ -41,25 +43,9 @@ export default function Layout() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileSidebarOpen]);
 
-  // Save scroll before route change, restore on new route
   useEffect(() => {
-    const right = rightPanelRef.current;
-    const left = leftPanelRef.current;
-    if (right && prevPath && prevPath !== location.pathname) {
-      scrollCache[prevPath] = { right: right.scrollTop, left: left?.scrollTop || 0 };
-    }
-    prevPath = location.pathname;
-
-    const saved = scrollCache[location.pathname];
-    if (saved && right) {
-      requestAnimationFrame(() => {
-        right.scrollTop = saved.right;
-        if (left) left.scrollTop = saved.left;
-      });
-    } else if (right) {
-      right.scrollTop = 0;
-      if (left) left.scrollTop = 0;
-    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setMobileMenuOpen(false);
   }, [location.pathname]);
 
   const isHomePage = location.pathname === '/';
@@ -81,16 +67,21 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={`site-shell min-h-screen flex flex-col ${effectsEnabled ? '' : 'effects-paused'}`}>
+      <div className="ambient-scene" aria-hidden="true">
+        <div className="ambient-glow glow-one" /><div className="ambient-glow glow-two" />
+        {Array.from({ length: 7 }, (_, i) => <span className="floating-petal" key={i} style={{ '--i': i }} />)}
+      </div>
       {/* Navbar */}
-      <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4">
+      <nav className="site-nav sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-xl font-bold text-brand shrink-0">
-              {t('nav.brand')}
+            <Link to="/" className="site-logo shrink-0">
+              <span className="logo-spark" aria-hidden="true">✧</span>
+              <span>{t('nav.brand')}<small>little things, lovely days</small></span>
             </Link>
 
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-4">
+            <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-xs mx-6">
               <input
                 type="text"
                 placeholder={t('nav.searchPlaceholder')}
@@ -100,7 +91,7 @@ export default function Layout() {
               />
             </form>
 
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-4">
               <Link to="/" className="text-gray-600 hover:text-brand text-sm">{t('nav.home')}</Link>
               <Link to="/guestbook" className="text-gray-600 hover:text-brand text-sm">{t('nav.guestbook')}</Link>
               {user ? (
@@ -123,6 +114,10 @@ export default function Layout() {
                 </>
               )}
 
+              <button type="button" onClick={toggleEffects} className="motion-toggle"
+                aria-pressed={effectsEnabled} title={t('journal.toggleEffects')} aria-label={t('journal.toggleEffects')}>
+                <span aria-hidden="true">✧</span> {t(effectsEnabled ? 'journal.effectsOn' : 'journal.effectsOff')}
+              </button>
               {/* Language toggle */}
               <button
                 onClick={toggleLanguage}
@@ -135,7 +130,8 @@ export default function Layout() {
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+              aria-label={t('nav.menu')} aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +146,7 @@ export default function Layout() {
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-100 space-y-3">
+            <div className="lg:hidden py-4 border-t border-gray-100 space-y-3">
               <form onSubmit={handleSearch}>
                 <input
                   type="text"
@@ -178,6 +174,7 @@ export default function Layout() {
                   </>
                 )}
                 <div className="pt-2 border-t border-gray-100 flex items-center gap-2">
+                  <button type="button" onClick={toggleEffects} className="motion-toggle" aria-pressed={effectsEnabled}>{t(effectsEnabled ? 'journal.effectsOn' : 'journal.effectsOff')}</button>
                   <span className="text-xs text-gray-400">{t('nav.language')}:</span>
                   <button
                     onClick={toggleLanguage}
@@ -196,17 +193,19 @@ export default function Layout() {
       <main className="flex-1 w-full">
         {showSidebar ? (
           <>
+            <div className="home-hero-container"><HomeHero /></div>
             {/* Mobile sidebar toggle button - hide when sidebar is open */}
             {!mobileSidebarOpen && (
-              <div className="md:hidden fixed bottom-4 left-4 z-40">
+              <div className="md:hidden px-5 mb-4">
                 <button
                   onClick={() => setMobileSidebarOpen(true)}
-                  className="w-12 h-12 bg-brand text-white rounded-full shadow-lg flex items-center justify-center hover:bg-brand-hover transition-colors"
+                  className="inline-flex items-center gap-2 text-brand text-sm rounded-full border border-brand-light bg-white/80 px-4 py-2"
                   aria-label={t('nav.openSidebar')}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
                   </svg>
+                  {t('sidebar.about')}
                 </button>
               </div>
             )}
@@ -236,13 +235,13 @@ export default function Layout() {
             )}
 
             {/* Desktop layout */}
-            <div className="flex max-w-7xl mx-auto px-4 py-6" style={{ height: 'calc(100vh - 64px)' }}>
-              <div ref={leftPanelRef} className="w-[40%] shrink-0 hidden md:block overflow-y-auto pr-4">
+            <div className="home-grid">
+              <div className="home-sidebar hidden md:block">
                 <div className="pb-8">
                   <LeftSidebar />
                 </div>
               </div>
-              <div ref={rightPanelRef} className="flex-1 min-w-0 overflow-y-auto md:pl-4">
+              <div className="home-journal min-w-0" id="journal">
                 <div className="pb-8">
                   <Outlet />
                 </div>
@@ -250,7 +249,7 @@ export default function Layout() {
             </div>
           </>
         ) : (
-          <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className={`inner-page max-w-4xl mx-auto px-4 py-8 md:py-12 ${/^\/articles\/\d+$/.test(location.pathname) ? 'reading-page' : ''}`}>
             <Outlet />
           </div>
         )}
@@ -258,8 +257,10 @@ export default function Layout() {
 
       {/* Footer - only on home page */}
       {isHomePage && (
-        <footer className="bg-brand-light/20 border-t border-brand-light/40 py-6">
+        <footer className="site-footer">
           <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <span className="footer-flower" aria-hidden="true">✧</span>
+            <p className="footer-note">{t('journal.footer')}</p>
             {t('footer.text', { year: new Date().getFullYear() })}
           </div>
         </footer>

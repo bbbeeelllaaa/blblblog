@@ -32,8 +32,8 @@ export default function FeaturedCardsEditor({ cards: initialCards, onSave, onCan
       toast.error('Only image files are allowed');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File too large (max 5MB)');
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File too large (max 10MB)');
       return;
     }
 

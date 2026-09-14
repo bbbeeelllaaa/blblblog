@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -30,7 +34,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "backend.tar,frontend.tar"
+          source: "backend.tar,frontend.tar,deploy-backend.sh,deploy-frontend.sh,nginx/nginx.conf"
           target: /root/blblblog/
 
       - name: Deploy on server
@@ -40,7 +44,14 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
             cd /root/blblblog
             bash deploy-backend.sh
             bash deploy-frontend.sh
+            if docker inspect blblblog-nginx >/dev/null 2>&1; then
+              docker exec blblblog-nginx nginx -t
+              docker exec blblblog-nginx nginx -s reload
+            fi
+            curl --fail --silent --show-error --retry 5 --retry-delay 3 --retry-connrefused http://localhost/api/health
+            curl --fail --silent --show-error --retry 5 --retry-delay 3 --retry-connrefused -o /dev/null http://localhost/
             echo "Deploy complete at $(date)"

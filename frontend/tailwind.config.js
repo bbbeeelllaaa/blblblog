@@ -8,17 +8,17 @@ export default {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#99B6B4',
-          light: '#BACFCE',
-          hover: '#7DA3A1',
+          DEFAULT: '#946277',
+          light: '#E4CBD7',
+          hover: '#78485E',
         },
         warm: {
-          DEFAULT: '#DFB199',
-          hover: '#D1A585',
+          DEFAULT: '#B58764',
+          hover: '#946D4D',
         },
         rose: {
-          DEFAULT: '#D48982',
-          hover: '#C0706E',
+          DEFAULT: '#AC6174',
+          hover: '#924A60',
         },
       },
     },

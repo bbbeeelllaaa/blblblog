@@ -6,7 +6,7 @@ import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
 import { getErrorDetail } from '../services/api';
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp'];
 
 export default function ProfilePage() {

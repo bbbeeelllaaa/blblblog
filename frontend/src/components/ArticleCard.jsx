@@ -21,7 +21,7 @@ export default function ArticleCard({ article, index = 0, hero = false }) {
 
   if (hero) {
     return (
-      <article className={`${bg} rounded-xl shadow-sm border border-brand-light/20 border-l-[3px] ${accent} p-6 md:p-8 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
+      <article className={`journal-article ${hero ? 'journal-featured' : ''} ${bg} rounded-xl shadow-sm border border-brand-light/20 border-l-[3px] ${accent} p-6 md:p-8 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
         {/* Top accent bar */}
         <div className={`h-1 rounded-full w-16 mb-5 ${index % 4 === 0 ? 'bg-brand' : index % 4 === 1 ? 'bg-warm' : index % 4 === 2 ? 'bg-rose' : 'bg-brand-light'}`} />
 
@@ -89,7 +89,7 @@ export default function ArticleCard({ article, index = 0, hero = false }) {
   }
 
   return (
-    <article className={`${bg} rounded-xl shadow-sm border border-brand-light/20 border-l-[3px] ${accent} p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
+    <article className={`journal-article ${hero ? 'journal-featured' : ''} ${bg} rounded-xl shadow-sm border border-brand-light/20 border-l-[3px] ${accent} p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
       <div className="flex items-center gap-3 mb-3">
         <Link to={`/users/${article.author_id}`} className="flex items-center gap-2 hover:opacity-80 shrink-0">
           <Avatar src={article.author_avatar} letter={article.author_name?.[0]?.toUpperCase()} size="w-7 h-7" ring="ring-1 ring-white" />

@@ -49,42 +49,21 @@ export default function HomePage() {
 
   return (
     <div>
-      <div className="mb-6">
-        {tag ? (
-          <h1 className="text-3xl font-bold text-gray-900">
-            {t('article.tagFilter', { tag })}
-          </h1>
-        ) : (
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 leading-snug">
-              The wheel turns, nothing is ever new.
-            </h1>
-            <p className="text-gray-500 mt-1 italic">
-              — Sherlock Holmes
-            </p>
-          </div>
-        )}
-        <p className="text-gray-500 mt-1">
-          {total} {t('article.published')}
-        </p>
+      <div className="journal-heading">
+        <div>
+          <p className="eyebrow">{t('journal.collection')}</p>
+          <h2>{tag ? t('article.tagFilter', { tag }) : t('journal.latest')}</h2>
+        </div>
+        <span className="journal-total">{total} {t('article.published')}</span>
       </div>
-
-      <div className="flex flex-wrap gap-2 mb-6">
-        {categories.map((c) => {
-          const active = category === c.key;
-          return (
-            <Link
-              key={c.key}
-              to={`/?category=${c.key}`}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
-                active ? 'bg-brand text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {c.label}
-            </Link>
-          );
-        })}
-      </div>
+      <nav className="category-tabs" aria-label={t('category.label')}>
+        {categories.map((c) => (
+          <Link key={c.key} to={`/?category=${c.key}`} aria-current={category === c.key ? 'page' : undefined}
+            className={category === c.key ? 'category-tab active' : 'category-tab'}>
+            {c.label}
+          </Link>
+        ))}
+      </nav>
 
       {loading ? (
         <div className="space-y-4">
@@ -104,8 +83,9 @@ export default function HomePage() {
           ))}
         </div>
       ) : articles.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-gray-400 text-lg">
+        <div className="journal-empty text-center py-16">
+          <span className="empty-flower" aria-hidden="true">❀</span>
+          <p className="text-gray-500 text-sm">
             {tag ? t('article.noArticles') : t('category.empty')}
           </p>
         </div>

@@ -31,7 +31,8 @@
     "writeArticle": "Write Article",
     "adminPanel": "Admin Panel",
     "language": "Language",
-    "loggedOut": "Logged out"
+    "loggedOut": "Logged out",
+    "menu": "Menu"
   },
   "auth": {
     "login": "Login",
@@ -255,7 +256,7 @@
     "addImage": "Add image",
     "uploadingImage": "Uploading...",
     "imageTypeError": "Only image files are allowed",
-    "fileTooLarge": "File too large (max 5MB)",
+    "fileTooLarge": "File too large (max 10MB)",
     "uploadFailed": "Image upload failed",
     "messageImage": "Message image",
     "delete": "Delete message",
@@ -276,6 +277,20 @@
     "attachFile": "Attach file",
     "fileUploaded": "Attachment inserted",
     "uploading": "Uploading — please wait before publishing…",
-    "attachmentHint": "PDF, Office documents, text and archives. Default attachment limit: 5 MB per file."
+    "attachmentHint": "PDF, Office documents, text and archives. Default attachment limit: 10 MB per file."
+  },
+  "journal": {
+    "eyebrow": "LET LIFE BLOOM · A PERSONAL JOURNAL",
+    "title": "In ordinary days,",
+    "titleAccent": "find a little wonder.",
+    "description": "Small moments, things learned, and places explored. A quiet corner for stories that feel like a letter from a friend.",
+    "explore": "Explore the journal",
+    "collection": "THE JOURNAL · WORDS & MOMENTS",
+    "latest": "Recent stories",
+    "author": "THE AUTHOR · A LITTLE ABOUT ME",
+    "footer": "Live slowly. Keep the lovely little things.",
+    "effectsOn": "Motion on",
+    "effectsOff": "Motion off",
+    "toggleEffects": "Toggle decorative motion"
   }
 }

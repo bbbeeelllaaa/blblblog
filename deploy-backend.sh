@@ -11,7 +11,7 @@
 # so files persist in /root/blblblog/uploads/
 # and will never be lost on container rebuild.
 # ============================================
-set -e
+set -eo pipefail
 
 PROJECT_DIR="/root/blblblog"
 UPLOADS_DIR="$PROJECT_DIR/uploads"
@@ -71,5 +71,16 @@ docker run -d \
   blblblog-backend:latest
 
 echo ">>> Step 5: Verify"
-sleep 3
-curl -s http://localhost/api/health && echo "" && echo ">>> Deploy OK!" || echo ">>> WARNING: Health check failed, check logs with: docker logs blblblog-backend"
+docker exec blblblog-backend python -c '
+import time, urllib.request
+for attempt in range(30):
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:8000/health", timeout=2) as response:
+            assert response.status == 200
+        print("Backend healthy")
+        break
+    except Exception:
+        if attempt == 29:
+            raise
+        time.sleep(2)
+'
