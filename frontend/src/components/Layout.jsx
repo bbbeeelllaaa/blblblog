@@ -69,7 +69,7 @@ export default function Layout() {
   return (
     <div className={`site-shell min-h-screen flex flex-col ${effectsEnabled ? '' : 'effects-paused'}`}>
       <div className="ambient-scene" aria-hidden="true">
-        <div className="ambient-glow glow-one" /><div className="ambient-glow glow-two" />
+        <div className="ambient-glow glow-one" /><div className="ambient-glow glow-two" /><div className="ambient-glow glow-three" />
         {Array.from({ length: 7 }, (_, i) => <span className="floating-petal" key={i} style={{ '--i': i }} />)}
       </div>
       {/* Navbar */}
