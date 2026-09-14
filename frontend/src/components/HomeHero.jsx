@@ -20,7 +20,7 @@ export default function HomeHero() {
         <span className="art-star star-three">✦</span>
         <div className="art-flower flower-one"><i /><i /><i /><i /><i /><b /></div>
         <div className="art-flower flower-two"><i /><i /><i /><i /><i /><b /></div>
-        <div className="art-note"><span>Dear ordinary days,</span><strong>you are beautiful.</strong><small>with love, always ♡</small></div>
+        <div className="art-note"><strong>The world is really big.</strong><span>If you don't meet up, you won't see each other again.</span></div>
         <span className="art-caption">a place for little wonders</span>
       </div>
     </section>
