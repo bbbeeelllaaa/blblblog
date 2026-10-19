@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import MDEditor from '@uiw/react-md-editor';
 import { articleAPI, likeAPI, favoriteAPI, statsAPI } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { formatDateTime } from '../utils/dateFormat';
 import CommentSection from '../components/CommentSection';
 import Avatar from '../components/Avatar';
 import toast from 'react-hot-toast';
+
+const ArticleContent = lazy(() => import('../components/ArticleContent'));
 
 export default function ArticleDetailPage() {
   const { t, i18n } = useTranslation();
@@ -178,7 +179,7 @@ export default function ArticleDetailPage() {
 
       {/* Content */}
       <div className="mb-8" data-color-mode="light">
-        <MDEditor.Markdown source={article.content} />
+        <Suspense fallback={<p>{t('common.loading')}</p>}><ArticleContent content={article.content} document={article.content_json} /></Suspense>
       </div>
 
       {/* Comments */}

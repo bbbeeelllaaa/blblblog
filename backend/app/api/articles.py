@@ -37,7 +37,7 @@ async def update_article(
         raise HTTPException(status_code=404, detail="Article not found")
     article = await article_service.update_article(db, article, data.model_dump(exclude_unset=True))
     await search_service.update_search_vector(db, article)
-    if data.title or data.content:
+    if data.model_fields_set & {"title", "content", "content_json"}:
         await search_service.update_embedding(db, article)
     await db.commit()
     return await _build_detail(db, article, user.id)
@@ -103,10 +103,11 @@ async def delete_article(
 async def _build_list_item(db: AsyncSession, article: Article) -> dict:
     like_count = await article_service.get_article_like_count(db, article.id)
     comment_count = await article_service.get_article_comment_count(db, article.id)
+    body_text = article_service.get_article_text(article)
     return {
         "id": article.id,
         "title": article.title,
-        "summary": article.summary or (article.content[:200] + "..." if article.content else None),
+        "summary": article.summary or (body_text[:200] + ("..." if len(body_text) > 200 else "") if body_text else None),
         "author_id": article.author_id,
         "author_name": article.author.username,
         "author_avatar": article.author.avatar,
@@ -133,6 +134,7 @@ async def _build_detail(db: AsyncSession, article: Article, user_id: int | None 
         "id": article.id,
         "title": article.title,
         "content": article.content,
+        "content_json": article.content_json,
         "summary": article.summary,
         "author_id": article.author_id,
         "author_name": article.author.username if article.author else "Unknown",

@@ -13,6 +13,7 @@ export default function CreateArticlePage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [contentJson, setContentJson] = useState(null);
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState([]);
   const [category, setCategory] = useState('');
@@ -38,6 +39,7 @@ export default function CreateArticlePage() {
       const res = await articleAPI.create({
         title: title.trim(),
         content: content.trim(),
+        content_json: contentJson,
         summary: summary.trim() || null,
         tags: tags,
         category: category,
@@ -67,7 +69,7 @@ export default function CreateArticlePage() {
           <option value="life">{t('category.life')}</option>
         </select>
         <TagInput value={tags} onChange={setTags} placeholder={t('article.tagsPlaceholder')} />
-        <ArticleEditor value={content} onChange={setContent} onUploadingChange={setUploading} disabled={saving} />
+        <ArticleEditor value={content} document={contentJson} onChange={(markdown, document) => { setContent(markdown); setContentJson(document); }} onUploadingChange={setUploading} disabled={saving} />
         <div className="flex gap-3 items-center">
           <button type="button" onClick={(e) => handleSubmit(e, false)} className="btn-primary" disabled={saving || uploading}>
             {saving ? t('article.publishing') : t('article.publish')}

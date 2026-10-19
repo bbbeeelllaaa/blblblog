@@ -25,6 +25,7 @@ docker run -d \
   --network=blblblog_default \
   --network-alias=frontend \
   --restart=unless-stopped \
+  -v "$PROJECT_DIR/uploads:/app/uploads:ro" \
   blblblog-frontend:latest
 
 echo ">>> Step 4: Verify"

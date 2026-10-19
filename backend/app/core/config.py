@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
     UPLOAD_DIR: str = "./uploads"
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024
+    MAX_IMAGE_UPLOAD_SIZE: int = 20 * 1024 * 1024
+    MAX_FILE_UPLOAD_SIZE: int = 50 * 1024 * 1024
+    MAX_VIDEO_UPLOAD_SIZE: int = 200 * 1024 * 1024
     AI_API_KEY: str = ""
     AI_API_BASE: str = "https://api.openai.com/v1"
     AI_MODEL: str = "gpt-4o-mini"

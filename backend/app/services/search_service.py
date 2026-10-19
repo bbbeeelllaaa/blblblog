@@ -2,6 +2,7 @@ from sqlalchemy import select, text, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.models.article import Article
+from app.services.article_service import get_article_text
 
 
 def _build_tsquery(query: str) -> str | None:
@@ -108,6 +109,13 @@ async def fulltext_search(
 ) -> tuple[list[Article], int]:
     """Search articles by title, summary, and content using ILIKE."""
     like_pattern = f"%{query}%"
+    # Search JSON string values only, so compatibility HTML attributes/tags are not hits.
+    paths = ("$.**.text", "$.**.attrs.title", "$.**.attrs.description", "$.**.attrs.caption", "$.**.attrs.alt", "$.**.attrs.name")
+    rich_values = " || ".join(
+        f"jsonb_path_query_array(a.content_json, '{path} ? (@.type() == \"string\")')" for path in paths
+    )
+    rich_text = f"(SELECT COALESCE(string_agg(part, ' '), '') FROM jsonb_array_elements_text({rich_values}) AS article_parts(part))"
+    body_text = f"(CASE WHEN a.content_json IS NULL THEN a.content ELSE {rich_text} END)"
 
     tag_join = ""
     tag_where = ""
@@ -119,7 +127,7 @@ async def fulltext_search(
         SELECT COUNT(*) FROM articles a
         {tag_join}
         WHERE a.is_published = true
-          AND (a.title ILIKE :q OR a.summary ILIKE :q OR a.content ILIKE :q)
+          AND (a.title ILIKE :q OR a.summary ILIKE :q OR {body_text} ILIKE :q)
           {tag_where}
     """)
     count_params = {"q": like_pattern}
@@ -132,11 +140,11 @@ async def fulltext_search(
         SELECT a.id,
                (CASE WHEN a.title ILIKE :q THEN 3.0 ELSE 0.0 END +
                 CASE WHEN a.summary ILIKE :q THEN 2.0 ELSE 0.0 END +
-                CASE WHEN a.content ILIKE :q THEN 1.0 ELSE 0.0 END) AS relevance
+                CASE WHEN {body_text} ILIKE :q THEN 1.0 ELSE 0.0 END) AS relevance
         FROM articles a
         {tag_join}
         WHERE a.is_published = true
-          AND (a.title ILIKE :q OR a.summary ILIKE :q OR a.content ILIKE :q)
+          AND (a.title ILIKE :q OR a.summary ILIKE :q OR {body_text} ILIKE :q)
           {tag_where}
         ORDER BY relevance DESC, a.created_at DESC
         OFFSET :offset LIMIT :limit
@@ -202,7 +210,7 @@ async def update_search_vector(db: AsyncSession, article: Article) -> None:
     import jieba
     title_seg = " ".join(jieba.cut(article.title))
     summary_seg = " ".join(jieba.cut(article.summary or ""))
-    content_seg = " ".join(jieba.cut(article.content[:5000]))
+    content_seg = " ".join(jieba.cut(get_article_text(article)[:5000]))
 
     sql = text("""
         UPDATE articles
@@ -214,7 +222,7 @@ async def update_search_vector(db: AsyncSession, article: Article) -> None:
 
 async def update_embedding(db: AsyncSession, article: Article) -> None:
     """Update article embedding vector."""
-    embedding = await _get_embedding(f"{article.title}\n{article.content[:2000]}")
+    embedding = await _get_embedding(f"{article.title}\n{get_article_text(article)[:2000]}")
     if embedding:
         article.embedding = embedding
         await db.flush()

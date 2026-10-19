@@ -7,7 +7,7 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 - **Single-author blog**: only admins can publish articles. Regular users can comment on articles and post in the guestbook; their profile pages remain.
 - **Article categories (分区)**: three built-in sections — 技术探索 (tech), 学习追踪 (study), 生活琐事 (life) — stored as stable slugs so display names can be renamed later without a migration.
 - **User System**: Register, login (JWT), profile management with avatar upload
-- **Blog Articles**: Visual Markdown editor with source mode, image upload, downloadable file attachments, tags, pagination
+- **Blog Articles**: Tiptap rich text editor with fonts, colors, resizable images/tables, draggable blocks, cards, Markdown source/preview, and batch media uploads
 - **Comments**: Nested replies (threaded comments), Markdown support
 - **Guestbook (留言板)**: logged-in users leave messages
 - **Likes**: Like/unlike articles and comments, real-time count via Redis
@@ -18,6 +18,21 @@ A full-stack personal blog system built with FastAPI + React + PostgreSQL + Redi
 - **Online Stats**: Real-time UV/PV tracking using Redis HyperLogLog
 - **Responsive Design**: Mobile-first, works on phones and desktops
 - **API Documentation**: Auto-generated Swagger UI at `/docs`
+
+The article composer supports rich text, a `/` insertion menu, draggable blocks,
+resizable images and tables, and note/tip/warning/link/image cards. Card backgrounds
+and borders can be customized. Markdown source mode preserves advanced formatting
+as HTML; `.md` import/export and a read-only preview are available.
+
+New article documents are stored as JSON alongside compatibility Markdown. Migration
+`011` adds a nullable column and leaves existing article content unchanged.
+The reading page renders both formats with HTML sanitization.
+
+File selection, dropping files, and pasting images share one upload queue. At most
+three files upload together, including at most one video. Each task supports progress,
+cancel, and retry; unresolved uploads block publishing while writing remains available.
+Retries start the individual file again. Video playback depends on browser support for
+the uploaded codec; videos are stored on the existing server without transcoding.
 
 ## Tech Stack
 
@@ -154,6 +169,24 @@ Copy `.env.example` to `.env` and configure:
 | `AI_API_BASE` | OpenAI-compatible API base URL | `https://api.openai.com/v1` |
 | `AI_MODEL` | Embedding model for semantic search | `gpt-4o-mini` |
 | `NGINX_PORT` | Nginx public port (docker) | `8080` |
+| `MAX_UPLOAD_SIZE` | Avatar limit in bytes | `10485760` (10 MiB) |
+| `MAX_IMAGE_UPLOAD_SIZE` | Article image limit in bytes | `20971520` (20 MiB) |
+| `MAX_FILE_UPLOAD_SIZE` | Article attachment limit in bytes | `52428800` (50 MiB) |
+| `MAX_VIDEO_UPLOAD_SIZE` | Article video limit in bytes | `209715200` (200 MiB) |
+
+### Article media uploads
+
+Media stays on the existing server disk; no object storage service is required. Each queued file uses a separate multipart request (field `file`) so one failure does not fail the other uploads. `GET /api/upload/limits` returns `{image, video, file, avatar}` limits in bytes for logged-in clients.
+
+| Endpoint | Permission | Accepted files | Default limit |
+|----------|------------|----------------|---------------|
+| `POST /api/upload/image` | Logged in | PNG, JPEG, GIF, WebP, BMP | 20 MiB |
+| `POST /api/upload/video` | Admin | MP4, WebM | 200 MiB |
+| `POST /api/upload/file` | Admin | Documents and archives | 50 MiB |
+
+Successful uploads return `{url, name, size, type}`. Images and videos are validated against their file signatures, MIME types and extensions; SVG and HTML uploads are rejected. Files are copied in bounded chunks through asynchronous disk writes, and incomplete files are deleted on failure or disconnect. FastAPI's multipart parser spools large request bodies to temporary disk rather than keeping the entire file in memory.
+
+Existing image URLs and attachment download URLs continue to work. The backend deployment keeps its `/root/blblblog/uploads:/app/uploads` bind mount; the frontend mounts the same directory read-only and Nginx serves `/uploads/` directly, including byte ranges for video seeking. Attachments retain the API download response with `Content-Disposition: attachment`. Only the three article upload endpoints receive the 201 MiB proxy body allowance and ten-minute idle timeouts; other requests retain the existing 11 MiB proxy limit. Application limits can be lowered independently; increasing the maximum above 200 MiB also requires updating both Nginx configurations.
 
 ## API Documentation
 

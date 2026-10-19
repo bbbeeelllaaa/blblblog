@@ -14,6 +14,7 @@ export default function EditArticlePage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [contentJson, setContentJson] = useState(null);
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState([]);
   const [category, setCategory] = useState('');
@@ -32,6 +33,7 @@ export default function EditArticlePage() {
       const a = res.data;
       setTitle(a.title);
       setContent(a.content);
+      setContentJson(a.content_json || null);
       setSummary(a.summary || '');
       setTags(a.tags?.map((t) => t.name) || []);
       setCategory(a.category || '');
@@ -49,6 +51,7 @@ export default function EditArticlePage() {
       const data = {
         title: title.trim(),
         content: content.trim(),
+        content_json: contentJson,
         summary: summary.trim() || null,
         tags: tags,
         category: category,
@@ -88,7 +91,7 @@ export default function EditArticlePage() {
           <option value="life">{t('category.life')}</option>
         </select>
         <TagInput value={tags} onChange={setTags} placeholder={t('article.tagsPlaceholder')} />
-        <ArticleEditor key={id} value={content} onChange={setContent} onUploadingChange={setUploading} disabled={saving} />
+        <ArticleEditor key={id} value={content} document={contentJson} onChange={(markdown, document) => { setContent(markdown); setContentJson(document); }} onUploadingChange={setUploading} disabled={saving} />
         <div className="flex gap-3 items-center flex-wrap">
           {isDraft ? (
             <>

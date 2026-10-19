@@ -8,6 +8,25 @@ from app.models.favorite import Favorite
 from app.models.user import User
 
 
+def get_article_text(article: Article) -> str:
+    """Use the rich document's visible text, keeping legacy Markdown untouched."""
+    document = getattr(article, "content_json", None)
+    if document is None:
+        return article.content
+    parts = []
+    nodes = [document]
+    while nodes:
+        node = nodes.pop()
+        if isinstance(node.get("text"), str):
+            parts.append(node["text"])
+        attrs = node.get("attrs", {})
+        for key in ("title", "description", "caption", "alt", "name"):
+            if isinstance(attrs.get(key), str):
+                parts.append(attrs[key])
+        nodes.extend(reversed(node.get("content", [])))
+    return " ".join(" ".join(parts).split())
+
+
 async def create_article(db: AsyncSession, author_id: int, data: dict) -> Article:
     tags = data.pop("tags", [])
     article = Article(author_id=author_id, **data)
@@ -22,8 +41,11 @@ async def create_article(db: AsyncSession, author_id: int, data: dict) -> Articl
 
 async def update_article(db: AsyncSession, article: Article, data: dict) -> Article:
     tags = data.pop("tags", None)
+    if data.get("content") is not None and "content_json" not in data:
+        # Older clients edit Markdown only; never render a stale rich document.
+        article.content_json = None
     for key, value in data.items():
-        if value is not None:
+        if value is not None or key == "content_json":
             setattr(article, key, value)
     if tags is not None:
         tag_objs = await _get_or_create_tags(db, tags)

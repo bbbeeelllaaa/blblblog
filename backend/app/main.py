@@ -1,7 +1,7 @@
 import os
-import uuid
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from pathlib import Path
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.config import get_settings
@@ -20,6 +20,16 @@ from app.api.guestbook import router as guestbook_router
 from app.api.uploads import router as uploads_router
 
 settings = get_settings()
+
+
+class PublicUploadFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        parts = Path(path).parts
+        if any(part.startswith(".") for part in parts) or (parts and parts[0].lower() == "attachments"):
+            raise HTTPException(404, "File not found")
+        response = await super().get_response(path, scope)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
 
 
 @asynccontextmanager
@@ -48,7 +58,7 @@ app.add_middleware(
 
 # Mount uploads directory
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+app.mount("/uploads", PublicUploadFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # Register routers
 app.include_router(auth_router)
@@ -68,21 +78,3 @@ app.include_router(uploads_router)
 @app.get("/health")
 async def health():
     return {"status": "ok"}
-
-
-@app.post("/upload/image")
-async def upload_image(file: UploadFile = File(...)):
-    if file.content_type and not file.content_type.startswith("image/"):
-        raise HTTPException(400, "Only image files are allowed")
-
-    content = await file.read()
-    if len(content) > settings.MAX_UPLOAD_SIZE:
-        raise HTTPException(400, "File too large")
-
-    ext = os.path.splitext(file.filename or ".png")[1] or ".png"
-    filename = f"{uuid.uuid4().hex}{ext}"
-    filepath = os.path.join(settings.UPLOAD_DIR, filename)
-    with open(filepath, "wb") as f:
-        f.write(content)
-
-    return {"url": f"/uploads/{filename}"}

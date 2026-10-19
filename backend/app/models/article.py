@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import String, Text, DateTime, ForeignKey, Table, Column, func, Index
-from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from pgvector.sqlalchemy import Vector
 from app.core.database import Base
@@ -19,6 +19,7 @@ class Article(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     content: Mapped[str] = mapped_column(Text, nullable=False)
+    content_json: Mapped[dict | None] = mapped_column(JSONB(none_as_null=True), nullable=True)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     view_count: Mapped[int] = mapped_column(default=0)

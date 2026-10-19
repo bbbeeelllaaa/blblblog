@@ -1,0 +1,19 @@
+.editor-uploads { padding: 12px 18px; border-top: 1px solid #e8e2e5; font-size: 13px; color: #5e5660; }
+.editor-uploads-original { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.editor-uploads-original input { accent-color: #af687f; }
+.editor-uploads-list { max-height: 310px; overflow-y: auto; margin-top: 10px; }
+.editor-uploads-hint { font-size: 12px; margin: 0 0 9px; color: #756b75; }
+.editor-upload-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid #eee8eb; }
+.editor-upload-preview { width: 42px; height: 42px; border-radius: 6px; background: #f1ecf0; display: grid; place-items: center; flex-shrink: 0; overflow: hidden; }
+.editor-upload-preview img { width: 100%; height: 100%; object-fit: cover; }
+.editor-upload-info { min-width: 0; flex: 1; }
+.editor-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #423a43; }
+.editor-upload-meta { margin-top: 2px; font-size: 11px; color: #756b75; }
+.editor-upload-info progress { display: block; width: 100%; height: 5px; margin-top: 5px; accent-color: #af687f; }
+.editor-upload-error { margin: 4px 0 0; color: #b42335; font-size: 12px; overflow-wrap: anywhere; }
+.editor-upload-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.editor-upload-actions button { border: 1px solid #ded4da; border-radius: 5px; background: #fff; color: #654456; padding: 4px 7px; cursor: pointer; }
+.editor-upload-actions button:hover { background: #faf2f6; }
+.editor-upload-actions button:focus-visible { outline: 2px solid #af687f; outline-offset: 2px; }
+.editor-upload-succeeded .editor-upload-actions { color: #48805c; }
+@media (max-width: 480px) { .editor-uploads { padding: 10px; } .editor-upload-row { gap: 7px; } .editor-upload-preview { width: 32px; height: 32px; } }
