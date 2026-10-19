@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://blog_user:blog_password@localhost:5432/blog_db"
     JWT_SECRET_KEY: str = "change-me-to-a-random-secret-key-at-least-32-chars"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 60
+    JWT_EXPIRE_MINUTES: int = 360
     REDIS_URL: str = "redis://localhost:6379/0"
     UPLOAD_DIR: str = "./uploads"
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024

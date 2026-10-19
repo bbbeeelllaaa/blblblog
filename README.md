@@ -148,7 +148,7 @@ Copy `.env.example` to `.env` and configure:
 |----------|-------------|---------|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql+asyncpg://blog_user:blog_password@localhost:5432/blog_db` |
 | `JWT_SECRET_KEY` | Secret key for JWT signing | (required, change me) |
-| `JWT_EXPIRE_MINUTES` | Token expiry time | `60` |
+| `JWT_EXPIRE_MINUTES` | Token expiry time in minutes (6 hours) | `360` |
 | `REDIS_URL` | Redis connection string | `redis://localhost:6379/0` |
 | `AI_API_KEY` | OpenAI-compatible API key for semantic search embeddings (optional) | (empty = full-text search only) |
 | `AI_API_BASE` | OpenAI-compatible API base URL | `https://api.openai.com/v1` |

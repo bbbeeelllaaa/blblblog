@@ -35,7 +35,7 @@ services:
       DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: HS256
-      JWT_EXPIRE_MINUTES: 60
+      JWT_EXPIRE_MINUTES: 360
       REDIS_URL: redis://redis:6379/0
       UPLOAD_DIR: /app/uploads
       AI_API_KEY: ${AI_API_KEY:-}
