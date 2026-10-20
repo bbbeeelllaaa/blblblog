@@ -76,20 +76,13 @@ export default function LeftSidebar() {
   const workTags = splitTags(owner.experience);
   const moodTags = splitTags(owner.interests);
 
-  // Rotate card colors: warm → rose → brand → repeat
-  const cardColors = [
-    'bg-warm/15 border-warm/30 hover:border-warm',
-    'bg-rose/10 border-rose/20 hover:border-rose',
-    'bg-brand-light/30 border-brand/25 hover:border-brand',
-  ];
-
   return (
     <aside className="journal-sidebar space-y-5 text-sm">
       {/* Owner info */}
       <section className="owner-card">
         <p className="eyebrow">{t('journal.author')}</p>
         <div className="owner-row">
-          <Link to={`/users/${owner.id}`} className="shrink-0">
+          <Link to={`/users/${owner.id}`} className="owner-avatar shrink-0">
             <Avatar src={owner.avatar} letter={owner.username?.[0]?.toUpperCase()} size="w-16 h-16" />
           </Link>
           <div className="owner-meta">
@@ -128,7 +121,7 @@ export default function LeftSidebar() {
       {/* Intro (Markdown) */}
       {!editingIntro && (
         <section className="sidebar-card">
-          <div className="flex items-center justify-between mb-2">
+          <div className="sidebar-card-heading flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold text-gray-800">{t('sidebar.about')}</h3>
             {isOwner && (
               <button onClick={() => { setIntroText(owner.intro || ''); setEditingIntro(true); }} className="text-xs text-gray-400 hover:text-brand">
@@ -160,7 +153,7 @@ export default function LeftSidebar() {
 
       {/* Featured / Daily Push */}
       <section className="sidebar-card">
-        <div className="flex items-center justify-between mb-3">
+        <div className="sidebar-card-heading flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-gray-800">{t('sidebar.dailyPush')}</h3>
           {isOwner && (
             <button
@@ -187,7 +180,7 @@ export default function LeftSidebar() {
               <div
                 key={i}
                 onClick={() => setExpandedCard(card)}
-                className={`block rounded-lg overflow-hidden border hover:shadow-md transition-all cursor-pointer group relative ${cardColors[i % 3]}`}
+                className="sidebar-featured-card block overflow-hidden transition-all cursor-pointer group relative"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') setExpandedCard(card); }}
@@ -203,7 +196,7 @@ export default function LeftSidebar() {
                     </div>
                   </div>
                 )}
-                <div className="p-3">
+                <div className="sidebar-featured-copy">
                   {card.title && <div className="font-semibold text-gray-800 text-sm truncate">{card.title}</div>}
                   {card.description && <div className="text-gray-600 text-xs mt-1 line-clamp-2">{card.description}</div>}
                   {!card.image && (

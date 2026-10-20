@@ -257,19 +257,41 @@
 .art-flower b { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #d9a441; top: 25px; left: 25px; }
 .home-grid { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 38px; max-width: 1200px; margin: 0 auto; padding: 28px 32px 48px; border-top: 1px solid #e9dfe6; align-items: start; }
 .home-sidebar { padding-top: 2px; }
-.owner-card { padding: 22px 20px; background: linear-gradient(150deg, #fffdf9, #edf3fb); border: 1px solid #e4eaf3; border-radius: 18px; }
-.owner-card > .eyebrow { margin-bottom: 16px; }
-.owner-row { display: flex; align-items: flex-start; gap: 14px; }
-.owner-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; min-height: 64px; }
-.owner-name { font-family: 'Songti SC', 'SimSun', Georgia, serif; font-size: 17px; font-weight: 600; color: #3f343c; line-height: 1.3; }
+.journal-sidebar > :is(.owner-card, .sidebar-card) {
+  position: relative;
+  padding: 23px 22px;
+  border: 1px solid #cdbfae;
+  border-radius: 9px;
+  background-color: #fffaf1;
+  background-image: linear-gradient(#fffaf1c2, #fffaf1c2), url('./assets/sidebar-canvas.webp');
+  background-size: 100% 100%;
+  box-shadow: 0 5px 16px #6856490b;
+}
+.journal-sidebar > :is(.owner-card, .sidebar-card)::before { content: ''; position: absolute; inset: 5px; border: 1px solid #e4d9c8; border-radius: 5px; pointer-events: none; }
+.owner-card > .eyebrow { margin-bottom: 20px; color: #8d747f; font-size: 9px; letter-spacing: 2px; }
+.owner-row { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; }
+.owner-avatar { grid-column: 1; grid-row: 1; }
+.owner-avatar > div { width: 56px; height: 56px; outline: 1px solid #c6b69c; outline-offset: 3px; }
+.owner-meta { display: contents; }
+.owner-name { grid-column: 2; grid-row: 1; font-family: 'Songti SC', 'SimSun', Georgia, serif; font-size: 17px; font-weight: 600; color: #574650; line-height: 1.3; }
 .owner-name:hover { color: #946277; }
-.owner-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-.owner-tag { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; font-size: 11px; line-height: 1.5; }
-.owner-tag--work { background: #e3eef9; color: #3d6386; }
-.owner-tag--mood { background: #fbeecf; color: #8a6a1f; }
-.owner-bio { margin-top: 12px; font-size: 12px; color: #6b5d66; line-height: 1.7; }
-.journal-sidebar .sidebar-card { box-shadow: none; }
-.journal-sidebar .sidebar-card h3 { color: #715669; font-family: 'Songti SC', 'SimSun', Georgia, serif; font-size: 16px; }
+.owner-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+.owner-tag { display: inline-flex; align-items: center; padding: 3px 7px; border-radius: 3px; font-size: 10px; line-height: 1.6; }
+.owner-tag--work { background: #dde6e6b8; color: #5b717b; }
+.owner-tag--mood { background: #ebdfd2bd; color: #876e54; }
+.owner-bio { margin-top: 17px; padding-top: 14px; border-top: 1px solid #d7cabb; font-size: 12px; color: #6a5c61; line-height: 1.9; }
+.journal-sidebar .sidebar-card h3 { color: #715764; font-family: 'Songti SC', 'SimSun', Georgia, serif; font-size: 16px; letter-spacing: 1px; font-weight: 500; }
+.journal-sidebar .sidebar-card-heading { margin-bottom: 15px; gap: 12px; }
+.sidebar-card-heading::after { content: ''; height: 1px; flex: 1; background: #d6c7b5; }
+.sidebar-card-heading > button { order: 1; }
+.journal-sidebar .sidebar-about-content .wmde-markdown { background: transparent; color: #61545b !important; line-height: 1.95 !important; }
+.journal-sidebar .sidebar-about-content a { color: #8e6b7e; }
+.sidebar-featured-card { padding: 5px; background: #fffcf6; border: 1px solid #d8cbbb; border-radius: 4px; box-shadow: 0 2px 6px #70594007; }
+.sidebar-featured-card:hover { border-color: #b8a08d; }
+.sidebar-featured-card img { border-radius: 1px; }
+.sidebar-featured-copy { padding: 11px 7px 8px; }
+.sidebar-featured-copy .font-semibold { font-family: 'Songti SC', 'SimSun', Georgia, serif; color: #5e4d57; font-weight: 500; }
+.sidebar-featured-copy .text-gray-600 { color: #8a7b80; }
 .journal-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 23px; }
 .journal-heading h2 { font-family: 'Songti SC', 'SimSun', Georgia, serif; font-size: 25px; color: #514451; letter-spacing: 2px; margin-top: 6px; }
 .journal-total { font-size: 11px; color: #95828f; white-space: nowrap; padding-bottom: 5px; }
@@ -283,6 +305,18 @@
 .journal-featured { background: linear-gradient(120deg, #fffdfb, #f8f1f7) !important; }
 .journal-featured h2 { font-size: 25px; }
 .journal-featured > div:first-child { height: 2px; width: 32px; background: #c19bad; }
+.home-journal .journal-article { background: #fdfaffd1 !important; border-color: #e8dff099 !important; box-shadow: 0 5px 20px #8f69aa0a !important; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+.home-journal .journal-article:hover { border-color: #d5c0e4 !important; box-shadow: 0 12px 32px #8f69aa14 !important; }
+.home-journal .journal-featured { background: linear-gradient(120deg, #fefbffd9, #f8f1fcd1) !important; }
+.home-journal .journal-featured > div:first-child { background: #c6b2d2; }
+.home-journal .journal-article h2 { color: #554c5f; }
+.home-journal .journal-article h2:hover { color: #79628c; }
+.home-journal .journal-article :is(.text-gray-900, .text-gray-800, .text-gray-700) { color: #5d5667; }
+.home-journal .journal-article .text-gray-600 { color: #625c6b; }
+.home-journal .journal-article .text-gray-500 { color: #756b7c; }
+.home-journal .journal-article .text-warm { background: #f1e9f699; border-color: #d9c9e580; color: #796486; }
+.home-journal .journal-article a.text-brand { background: #e9dcf280; color: #795c8d; }
+.home-journal .journal-article a.text-brand:hover { background: #decaec99; }
 .journal-empty { background: #fffdfb99; border: 1px dashed #deccda; border-radius: 20px; }
 .empty-flower { display: block; font-size: 38px; color: #ba91a8; margin-bottom: 16px; }
 .inner-page > div > h1 { font-family: 'Songti SC', 'STSong', 'SimSun', Georgia, serif; font-weight: 500; color: #654d61; }
