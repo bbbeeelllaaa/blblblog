@@ -70,7 +70,8 @@ export default function Layout() {
     <div className={`site-shell min-h-screen flex flex-col ${effectsEnabled ? '' : 'effects-paused'}`}>
       <div className="ambient-scene" aria-hidden="true">
         <div className="ambient-glow glow-one" /><div className="ambient-glow glow-two" /><div className="ambient-glow glow-three" />
-        {Array.from({ length: 7 }, (_, i) => <span className="floating-petal" key={i} style={{ '--i': i }} />)}
+        {Array.from({ length: 18 }, (_, i) => <span className="floating-petal" key={i} style={{ '--i': i }} />)}
+        {Array.from({ length: 3 }, (_, i) => <span className="shooting-star" key={i} style={{ '--i': i }} />)}
       </div>
       {/* Navbar */}
       <nav className="site-nav sticky top-0 z-50">
