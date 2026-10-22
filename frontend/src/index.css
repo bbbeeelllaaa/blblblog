@@ -244,7 +244,7 @@
 .hero-quote span { display: block; margin-top: 5px; font-size: 10px; }
 .hero-art { position: relative; isolation: isolate; aspect-ratio: 1; width: 100%; max-width: 480px; justify-self: center; pointer-events: none; }
 .moon-halo { position: absolute; inset: 7% 3% 16%; border-radius: 50%; background: radial-gradient(ellipse, #e9e0e52e 10%, #d7c5dc35 48%, #b7a4c51a 65%, transparent 75%); filter: blur(20px); animation: moon-glow 12s ease-in-out infinite alternate; }
-.moon-painting { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; filter: saturate(.4) brightness(.92) contrast(.88) drop-shadow(0 12px 22px #9d81a41c); animation: painting-float 16s ease-in-out infinite; }
+.moon-painting { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; filter: saturate(.4) brightness(.96) contrast(.88) drop-shadow(0 12px 22px #9d81a41c); animation: painting-float 16s ease-in-out infinite; }
 .moon-mist { position: absolute; z-index: 2; left: -3%; bottom: 12%; width: 100%; height: 26%; background: radial-gradient(ellipse, #e9e1e630, #dcd2e025 40%, transparent 72%); filter: blur(18px); animation: mist-drift 18s ease-in-out infinite alternate; }
 .moon-mote { position: absolute; z-index: 2; left: calc(7% + var(--i) * 13%); top: 22%; width: 3px; height: 3px; border-radius: 50%; background: #c7b5bc; box-shadow: 0 0 6px #d9bda642; animation: mote-drift 8s ease-in-out infinite; animation-delay: calc(var(--i) * -1.7s); }
 .moon-mote:nth-of-type(even) { top: 68%; width: 2px; height: 2px; }

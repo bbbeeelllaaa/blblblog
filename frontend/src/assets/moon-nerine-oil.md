@@ -3,7 +3,7 @@
 Asset: `moon-nerine-oil.png` (1280 × 1280, transparent PNG).
 Generated with the built-in ImageGen tool. The photographic draft was redrawn as an oil painting using the prompt below.
 
-The homepage applies `saturate(.4) brightness(.92) contrast(.88)` to soften the pink and lower the exposure. The separate halo and mist are deliberately subdued. These presentation adjustments live in `../index.css`; the PNG preserves the original oil-painting output.
+The homepage applies `saturate(.4) brightness(.96) contrast(.88)` to soften the pink and gently lower the exposure. The separate halo and mist are deliberately subdued. These presentation adjustments live in `../index.css`; the PNG preserves the original oil-painting output.
 
 ## Successful oil-painting prompt
 
