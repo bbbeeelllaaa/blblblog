@@ -5,6 +5,8 @@ import { articleAPI } from '../services/api';
 import ArticleCard from '../components/ArticleCard';
 import Pagination from '../components/Pagination';
 
+const ARTICLES_PER_PAGE = 6;
+
 export default function HomePage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -22,7 +24,7 @@ export default function HomePage() {
     { key: 'life', label: t('category.life') },
   ];
 
-  const totalPages = Math.ceil(total / 20);
+  const totalPages = Math.ceil(total / ARTICLES_PER_PAGE);
 
   // 切换分类/标签时回到第一页
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function HomePage() {
     let active = true;
     setLoading(true);
     articleAPI
-      .list({ page, size: 20, tag, category })
+      .list({ page, size: ARTICLES_PER_PAGE, tag, category })
       .then((res) => {
         if (!active) return;
         setArticles(res.data.items);
